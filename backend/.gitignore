@@ -214,3 +214,6 @@ desktop.ini
 *.bak
 *.backup
 *~
+
+# Test files (uncomment to exclude from production)
+# tests/

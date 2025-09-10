@@ -72,10 +72,13 @@ subprocess.Popen([chrome_path])
 backend/
 ├── main.py                 # Main entry point
 ├── requirements.txt        # Python dependencies
-├── test_app_scanner.py     # Test script
 ├── modules/                # Core modules
 │   ├── __init__.py
 │   └── app_scanner.py      # Application scanner module
+├── tests/                  # Test files (can be deleted after completion)
+│   ├── __init__.py
+│   ├── test_app_scanner.py # Application scanner tests
+│   └── README.md           # Test documentation
 └── data/                   # Data storage
     ├── applications.json   # Found applications (generated)
     ├── config.json         # Configuration (generated)
@@ -130,7 +133,12 @@ The scanner automatically detects:
 Run the test script to verify everything works:
 
 ```bash
-python test_app_scanner.py
+# Run application scanner test
+python tests/test_app_scanner.py
+
+# Or using pytest (recommended)
+pip install pytest
+pytest tests/ -v
 ```
 
 ## Logging
