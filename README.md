@@ -138,5 +138,9 @@ MIT License – free to use, modify, and distribute.
 
 ---
 
+<<<<<<< HEAD
 Made with ❤️ by **\[Your Name]**
+=======
+Made with ❤️ by **XHLEIK**
+>>>>>>> 31c665928c4b20bc907809a8c08125ac00ab35ff
 
