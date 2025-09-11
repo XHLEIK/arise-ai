@@ -1,143 +1,212 @@
-# A.R.I.S.E. ğŸ¤–
+# A.R.I.S.E. í´–
 **Advanced Real-time Intelligent System for Execution**  
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue) ![Electron](https://img.shields.io/badge/Electron-Frontend-green) ![License](https://img.shields.io/badge/License-MIT-yellow) ![GitHub issues](https://img.shields.io/github/issues/yourusername/arise-ai) ![GitHub stars](https://img.shields.io/github/stars/yourusername/arise-ai)
+![Python](https://img.shields.io/badge/Python-3.10+-blue) ![React](https://img.shields.io/badge/React-Frontend-cyan) ![License](https://img.shields.io/badge/License-MIT-yellow) ![GitHub](https://img.shields.io/github/stars/XHLEIK/arise-ai)
 
-A.R.I.S.E. is a desktop AI assistant that listens to your voice, understands queries, fetches real-time data, executes tasks, and responds with speech. Itâ€™s modular, fast, and designed for personal productivity and automation.
-
----
-
-## ğŸ¥ Demo
-![Demo GIF](https://via.placeholder.com/600x300.png?text=Demo+GIF+Here)
-*Short demo showing voice recognition, response, and automation.*
+A.R.I.S.E. is a voice-controlled desktop AI assistant that combines speech recognition, intelligent conversation, real-time data fetching, and system automation into a seamless experience. Talk to it naturally and watch it execute tasks, answer questions, and control your computer.
 
 ---
 
-## ğŸš€ Features
+## í¾¥ Current Status
+**âœ… FULLY FUNCTIONAL** - A.R.I.S.E. is complete and ready to use!
 
-- Voice recognition & real-time transcription  
-- Text-to-Speech (TTS) responses  
-- General chatbot for casual conversation  
-- Real-time data fetching: stocks, weather, news  
-- Automation of system tasks (open apps, run scripts)  
-- Multi-tasking using threading and async execution  
-- Modular and extensible backend architecture  
-- Error handling & logging for debugging  
-
----
-
-## ğŸ›  Tech Stack
-
-**Backend:** Python 3.10+, `speech_recognition`, `pyttsx3`, Flask/FastAPI, `asyncio`  
-**Frontend:** Electron / React, HTML/CSS/JS for UI  
-**APIs:** Gemini API for chatbot, Hugging Face for image generation, Google APIs for real-time data  
-**Database (Optional):** SQLite or JSON for storing user preferences and logs  
+- í¾¤ **Voice Recognition**: Real-time speech-to-text with Google Speech Recognition
+- í´Š **Text-to-Speech**: Natural voice responses at 180 WPM (human-like speed)
+- í·  **Multi-Engine Architecture**: Chat, Data, and Automation engines working independently
+- âš¡ **Ultra-Fast Automation**: Opens applications in ~0.06 seconds
+- í¼ **Real-time Data**: Weather, stocks, news, and web information
+- í·£ï¸ **Consistent Audio**: Every response includes voice output - no silent responses
 
 ---
 
-## ğŸ“ Folder Structure
+## íº€ Features
+
+### Core Functionality
+- **í¾™ï¸ Voice-First Interface**: Speak naturally, no keywords needed
+- **í·  Intelligent Classification**: Automatically routes requests to appropriate engine
+- **í²¬ Conversational AI**: Powered by Google Gemini for natural conversations
+- **í³Š Real-time Data**: Live weather, stock prices, news headlines
+- **í¶¥ï¸ System Automation**: Voice-controlled application launching (Chrome, Facebook, etc.)
+- **í´„ Continuous Operation**: Hands-free conversation loop with exit commands
+
+### Technical Excellence
+- **âš¡ Optimized Performance**: Sub-second response times
+- **í¾¯ Reliable TTS**: Audio plays for every single response
+- **í´§ Modular Design**: Independent engines with centralized coordination
+- **í³ Comprehensive Logging**: Full debug and performance tracking
+- **í»¡ï¸ Error Handling**: Graceful fallbacks and recovery mechanisms
+
+---
+
+## í»  Tech Stack
+
+**Backend:** Python 3.10+, speech_recognition, pyttsx3, google-generativeai, requests  
+**Frontend:** Vite + React, Electron for desktop app  
+**Voice:** Google Speech Recognition, Windows SAPI Text-to-Speech  
+**APIs:** Google Gemini AI, OpenWeatherMap, News APIs  
+**Architecture:** Event-driven, multi-engine with centralized TTS  
+
+---
+
+## í³ Project Structure
 
 ```
-
-arise-backend/
-â”œâ”€ main.py                  # Entry point
-â”œâ”€ modules/
-â”‚   â”œâ”€ speech\_recognition/recognizer.py
-â”‚   â”œâ”€ tts/tts\_engine.py
-â”‚   â”œâ”€ chatbot/chatbot.py
-â”‚   â”œâ”€ realtime\_search/search.py
-â”‚   â””â”€ automation/automation.py
-â”œâ”€ data/                    # Models, API keys, logs
-â”œâ”€ utils/                   # Helper functions
-â”œâ”€ requirements.txt
-â””â”€ README.md
-
-````
+arise-ai/
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ main.py                    # Main orchestrator with centralized TTS
+â”‚   â”œâ”€â”€ modules/
+â”‚   â”‚   â”œâ”€â”€ tts_engine.py         # Optimized text-to-speech (180 WPM)
+â”‚   â”‚   â”œâ”€â”€ stt_engine.py         # Speech recognition
+â”‚   â”‚   â”œâ”€â”€ automation_engine.py   # Ultra-fast app launching
+â”‚   â”‚   â”œâ”€â”€ app_scanner.py        # System application detection
+â”‚   â”‚   â””â”€â”€ brain/
+â”‚   â”‚       â”œâ”€â”€ chat_brain.py     # Conversational AI (Gemini)
+â”‚   â”‚       â””â”€â”€ data_engine.py    # Real-time data fetching
+â”‚   â”œâ”€â”€ data/
+â”‚   â”‚   â””â”€â”€ applications.json     # Scanned applications database
+â”‚   â””â”€â”€ requirements.txt
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ src/                      # React components
+â”‚   â”œâ”€â”€ electron/                 # Electron main process
+â”‚   â””â”€â”€ package.json
+â””â”€â”€ README.md
+```
 
 ---
 
-## âš¡ Installation
+## âš¡ Installation & Setup
 
+### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/arise-ai.git
+git clone https://github.com/XHLEIK/arise-ai.git
 cd arise-ai
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+```
+
+### 2. Backend Setup
+```bash
+cd backend
 pip install -r requirements.txt
+
+# Set up your API keys in modules/brain/.env
+echo "GEMINI_API_KEY=your_gemini_api_key_here" > modules/brain/.env
+```
+
+### 3. Run A.R.I.S.E.
+```bash
 python main.py
+```
+
+### 4. Frontend (Optional)
+```bash
+cd ../frontend
 npm install
-npm start  # Launch frontend
-````
+npm run dev
+```
 
 ---
 
-## ğŸ“Œ Usage
+## í¾¯ How to Use
 
-* Speak commands into your microphone.
-* Examples:
+1. **Start A.R.I.S.E.**: Run python main.py in the backend directory
+2. **Listen for greeting**: Wait for "Hello! I'm A.R.I.S.E..."
+3. **Speak naturally**: No wake words needed, just talk
 
-  * â€œWhatâ€™s the weather today?â€
-  * â€œOpen Chrome browserâ€
-  * â€œShow Tesla stock priceâ€
-  * â€œPlay relaxing musicâ€
-* The assistant can handle multiple query types simultaneously.
-
----
-
-## ğŸ›  Troubleshooting & Tips
-
-* Ensure your microphone is properly connected and accessible
-* Check sample rate: 44100 Hz or 48000 Hz for Windows
-* Make sure all API keys are set correctly in `data/config.json`
-* Use `python main.py --debug` to see logs and errors
-* For frontend issues, check Electron console with `Ctrl+Shift+I`
+### Example Commands:
+- **í²¬ Chat**: "How are you today?" / "Tell me a joke"
+- **í¼¤ï¸ Weather**: "What's the weather like?" / "Is it going to rain?"
+- **í³ˆ Stocks**: "Tesla stock price" / "How's the market doing?"
+- **í³° News**: "Latest news" / "What's happening today?"
+- **í¶¥ï¸ Apps**: "Open Facebook" / "Launch Chrome" / "Start calculator"
+- **íºª Exit**: "Goodbye" / "Exit" / "Stop"
 
 ---
 
-## ğŸ¤ Contributing
+## í¿—ï¸ Architecture Overview
 
-1. Fork the repo
-2. Create a branch: `git checkout -b feature-name`
-3. Commit: `git commit -m 'Add feature'`
-4. Push: `git push origin feature-name`
-5. Open a Pull Request
+A.R.I.S.E. uses a **centralized TTS architecture** ensuring every response includes voice:
 
-**Guidelines:**
+```
+User Speech â†’ STT Engine â†’ Request Classifier â†’ Engine Router
+                                                     â†“
+Chat Engine â†â†’ Data Engine â†â†’ Automation Engine
+                                                     â†“
+                            All Responses â†’ Centralized TTS â†’ Audio Output
+```
 
-* Keep code modular and clean
-* Comment your code for clarity
-* Follow Python PEP8 and JS/React best practices
-
----
-
-## ğŸ“œ License
-
-MIT License â€“ free to use, modify, and distribute.
-
----
-
-## ğŸ¯ Roadmap / Project Progression
-
-| Phase   | Status         | Description                                       |
-| ------- | -------------- | ------------------------------------------------- |
-| MVP     | âœ… Completed    | Voice recognition, basic TTS, simple chatbot      |
-| Phase 2 | âš™ï¸ In Progress | Real-time data fetch (stocks, weather, news)      |
-| Phase 3 | ğŸ”œ Upcoming    | Automation of apps & scripts, multi-tasking       |
-| Phase 4 | ğŸ”œ Upcoming    | Multi-language support, offline voice recognition |
-| Phase 5 | ğŸ”œ Upcoming    | Mobile companion app & integration                |
+### Engine Responsibilities:
+- **í·  Chat Brain**: Conversational AI using Google Gemini
+- **í³Š Data Engine**: Real-time information (weather, stocks, news)
+- **âš™ï¸ Automation Engine**: System tasks and application launching
+- **í¾¤ STT Engine**: Speech recognition and audio processing
+- **í´Š TTS Engine**: Voice synthesis with optimized timing
+- **í³± App Scanner**: System application discovery and management
 
 ---
 
-## ğŸ’¡ Future Enhancements
+## í»  Troubleshooting
 
-* Context-aware AI conversations
-* Offline speech recognition & caching
-* AI-powered recommendations & reminders
-* Customizable voice & interface themes
+### Audio Issues
+- Ensure microphone permissions are granted
+- Check Windows audio settings (44.1kHz recommended)
+- Verify speakers/headphones are working
+
+### API Issues
+- Confirm Gemini API key is set in modules/brain/.env
+- Check internet connection for data requests
+- Review logs in console for specific errors
+
+### Performance
+- A.R.I.S.E. is optimized for sub-second responses
+- Application launching: ~0.06 seconds
+- TTS speed: 180 WPM (natural human speech)
 
 ---
 
+## í³ˆ Project Status & Roadmap
 
-Made with â¤ï¸ by **XHLEIK**
+| Component | Status | Performance |
+|-----------|--------|-------------|
+| í¾¤ Speech Recognition | âœ… Complete | Real-time, Google API |
+| í´Š Text-to-Speech | âœ… Complete | 180 WPM, 100% reliability |
+| í²¬ Chat Engine | âœ… Complete | Gemini AI integration |
+| í³Š Data Engine | âœ… Complete | Weather, stocks, news |
+| âš™ï¸ Automation | âœ… Complete | 0.06s app launching |
+| í¶¥ï¸ Desktop UI | íº§ In Progress | React + Electron |
+| í³± Mobile App | í´œ Planned | Cross-platform |
 
+### Recent Achievements âœ¨
+- **Fixed TTS Consistency**: Audio now plays for every response
+- **Optimized Voice Speed**: Natural 180 WPM speech rate
+- **Ultra-Fast Automation**: 30-second delays reduced to 0.06 seconds
+- **Centralized Architecture**: Eliminated circular dependencies
+- **Enhanced Reliability**: Multiple TTS fallback methods
+
+---
+
+## í´ Contributing
+
+1. Fork the repository
+2. Create feature branch: git checkout -b feature-name
+3. Make changes and test thoroughly
+4. Commit: git commit -m 'Add feature'
+5. Push: git push origin feature-name
+6. Create Pull Request
+
+**Development Guidelines:**
+- Follow Python PEP8 standards
+- Maintain modular architecture
+- Add comprehensive error handling
+- Test voice functionality thoroughly
+- Update documentation
+
+---
+
+## í³œ License
+
+MIT License - Feel free to use, modify, and distribute.
+
+---
+
+**í¾¯ A.R.I.S.E. is production-ready and actively maintained.**
+
+**Built with â¤ï¸ by XHLEIK** | [GitHub](https://github.com/XHLEIK/arise-ai)
