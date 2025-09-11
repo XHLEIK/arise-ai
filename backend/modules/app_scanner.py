@@ -342,7 +342,11 @@ class ApplicationScanner:
                 r"C:\Program Files",
                 r"C:\Program Files (x86)",
                 os.path.expanduser("~\\AppData\\Local"),
-                os.path.expanduser("~\\AppData\\Roaming")
+                os.path.expanduser("~\\AppData\\Roaming"),
+                os.path.expanduser("~\\AppData\\Local\\Programs"),
+                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs",
+                os.path.expanduser("~\\Desktop"),
+                r"C:\Users\Public\Desktop"
             ]
         elif self.system == "Darwin":  # macOS
             common_dirs = [
@@ -482,6 +486,116 @@ class ApplicationScanner:
         else:
             return os.access(file_path, os.X_OK)
     
+    def scan_gaming_platforms(self) -> Dict[str, str]:
+        """
+        Scan for gaming platforms and installed games.
+        
+        Returns:
+            Dict[str, str]: Dictionary of games and their paths
+        """
+        games = {}
+        
+        if self.system != "Windows":
+            return games
+            
+        # Steam games
+        steam_paths = [
+            r"C:\Program Files\Steam",
+            r"C:\Program Files (x86)\Steam"
+        ]
+        
+        for steam_path in steam_paths:
+            if os.path.exists(steam_path):
+                # Look for Steam games
+                steamapps_path = os.path.join(steam_path, "steamapps", "common")
+                if os.path.exists(steamapps_path):
+                    try:
+                        for game_folder in os.listdir(steamapps_path):
+                            game_path = os.path.join(steamapps_path, game_folder)
+                            if os.path.isdir(game_path):
+                                # Look for the main executable
+                                exe_path = self._find_game_executable(game_path, game_folder)
+                                if exe_path:
+                                    games[f"{game_folder} (Steam)"] = exe_path
+                    except (PermissionError, OSError):
+                        continue
+        
+        # Epic Games
+        epic_path = r"C:\Program Files\Epic Games"
+        if os.path.exists(epic_path):
+            try:
+                for item in os.listdir(epic_path):
+                    if item != "Launcher":  # Skip the launcher folder
+                        game_path = os.path.join(epic_path, item)
+                        if os.path.isdir(game_path):
+                            exe_path = self._find_game_executable(game_path, item)
+                            if exe_path:
+                                games[f"{item} (Epic)"] = exe_path
+            except (PermissionError, OSError):
+                pass
+        
+        # Riot Games
+        riot_path = r"C:\Riot Games"
+        if os.path.exists(riot_path):
+            try:
+                for item in os.listdir(riot_path):
+                    game_path = os.path.join(riot_path, item)
+                    if os.path.isdir(game_path):
+                        exe_path = self._find_game_executable(game_path, item)
+                        if exe_path:
+                            games[f"{item} (Riot)"] = exe_path
+            except (PermissionError, OSError):
+                pass
+        
+        return games
+    
+    def _find_game_executable(self, game_path: str, game_name: str) -> Optional[str]:
+        """
+        Find the main executable for a game.
+        
+        Args:
+            game_path (str): Path to the game directory
+            game_name (str): Name of the game
+            
+        Returns:
+            Optional[str]: Path to the game executable
+        """
+        try:
+            # Common game executable patterns
+            common_patterns = [
+                f"{game_name.lower()}.exe",
+                f"{game_name.replace(' ', '')}.exe",
+                f"{game_name.replace(' ', '_')}.exe",
+                "game.exe",
+                "launcher.exe",
+                "main.exe"
+            ]
+            
+            # Look for executables in the game directory
+            for root, dirs, files in os.walk(game_path):
+                for file in files:
+                    if file.lower().endswith('.exe'):
+                        file_lower = file.lower()
+                        
+                        # Check against common patterns
+                        for pattern in common_patterns:
+                            if pattern in file_lower or file_lower == pattern:
+                                return os.path.join(root, file)
+                        
+                        # Skip known non-game executables
+                        skip_patterns = ['unins', 'setup', 'install', 'update', 'crash', 'report']
+                        if any(skip in file_lower for skip in skip_patterns):
+                            continue
+                        
+                        # If we find an executable in the root directory, prefer it
+                        if root == game_path and file_lower.endswith('.exe'):
+                            return os.path.join(root, file)
+        
+        except Exception:
+            pass
+            
+        return None
+    
     def scan_popular_applications(self) -> Dict[str, str]:
         """
         Scan for popular applications with known installation paths.
@@ -511,6 +625,16 @@ class ApplicationScanner:
                     r"C:\Program Files\Internet Explorer\iexplore.exe",
                     r"C:\Program Files (x86)\Internet Explorer\iexplore.exe"
                 ],
+                "Brave": [
+                    r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+                    r"C:\Program Files (x86)\BraveSoftware\Brave-Browser\Application\brave.exe",
+                    os.path.expanduser(r"~\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe")
+                ],
+                "Opera": [
+                    r"C:\Program Files\Opera\opera.exe", 
+                    r"C:\Program Files (x86)\Opera\opera.exe",
+                    os.path.expanduser(r"~\AppData\Local\Programs\Opera\opera.exe")
+                ],
                 
                 # Communication Apps
                 "WhatsApp": [
@@ -530,6 +654,11 @@ class ApplicationScanner:
                 ],
                 "Zoom": [
                     os.path.expanduser(r"~\AppData\Roaming\Zoom\bin\Zoom.exe")
+                ],
+                "Microsoft Teams": [
+                    os.path.expanduser(r"~\AppData\Local\Microsoft\Teams\current\Teams.exe"),
+                    r"C:\Program Files\Microsoft\Teams\current\Teams.exe",
+                    r"C:\Program Files (x86)\Microsoft\Teams\current\Teams.exe"
                 ],
                 
                 # Media & Entertainment
@@ -691,6 +820,22 @@ class ApplicationScanner:
                     r"C:\Program Files\Origin\Origin.exe",
                     r"C:\Program Files (x86)\Origin\Origin.exe"
                 ],
+                "Battle.net": [
+                    r"C:\Program Files (x86)\Battle.net\Battle.net.exe",
+                    r"C:\Program Files\Battle.net\Battle.net.exe"
+                ],
+                "Valorant": [
+                    r"C:\Riot Games\VALORANT\live\VALORANT.exe",
+                    r"C:\Program Files\Riot Games\VALORANT\live\VALORANT.exe"
+                ],
+                "League of Legends": [
+                    r"C:\Riot Games\League of Legends\LeagueClient.exe",
+                    r"C:\Program Files\Riot Games\League of Legends\LeagueClient.exe"
+                ],
+                "Minecraft": [
+                    os.path.expanduser(r"~\AppData\Roaming\.minecraft\MinecraftLauncher.exe"),
+                    r"C:\Program Files (x86)\Minecraft\MinecraftLauncher.exe"
+                ],
                 
                 # Utilities
                 "7-Zip": [
@@ -756,6 +901,12 @@ class ApplicationScanner:
         popular_apps = self.scan_popular_applications()
         all_apps.update(popular_apps)
         logger.info(f"Found {len(popular_apps)} popular applications")
+        
+        # Scan gaming platforms and games
+        logger.info("Scanning gaming platforms and games...")
+        gaming_apps = self.scan_gaming_platforms()
+        all_apps.update(gaming_apps)
+        logger.info(f"Found {len(gaming_apps)} games")
         
         # Scan Microsoft Office applications (Windows only)
         if self.system == "Windows":
@@ -971,8 +1122,8 @@ def main():
     """
     Main function for standalone execution.
     """
-    # Create scanner instance
-    scanner = ApplicationScanner("data/applications.json")
+    # Create scanner instance - save to correct path
+    scanner = ApplicationScanner("../data/applications.json")
     
     try:
         # Run the scan
