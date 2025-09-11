@@ -6,6 +6,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Test files and directories
+test_*.py
+*_test.py
+test/
+tests/
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
 # Build outputs
 dist/
 build/
