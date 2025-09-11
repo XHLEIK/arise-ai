@@ -144,28 +144,37 @@ class AutomationEngine:
         if text.startswith('www.'):
             return f"https://{text}"
         
-        # Common website mappings
+        # Common website mappings (most popular first for speed)
         website_mappings = {
+            'facebook': 'https://www.facebook.com',
+            'fb': 'https://www.facebook.com',
             'google': 'https://www.google.com',
             'youtube': 'https://www.youtube.com',
-            'facebook': 'https://www.facebook.com',
+            'gmail': 'https://mail.google.com',
             'twitter': 'https://www.twitter.com',
             'instagram': 'https://www.instagram.com',
+            'insta': 'https://www.instagram.com',
             'linkedin': 'https://www.linkedin.com',
             'github': 'https://www.github.com',
             'stackoverflow': 'https://stackoverflow.com',
             'stack overflow': 'https://stackoverflow.com',
             'reddit': 'https://www.reddit.com',
             'wikipedia': 'https://www.wikipedia.org',
+            'wiki': 'https://www.wikipedia.org',
             'amazon': 'https://www.amazon.com',
             'netflix': 'https://www.netflix.com',
-            'gmail': 'https://mail.google.com',
             'yahoo': 'https://www.yahoo.com',
             'bing': 'https://www.bing.com',
             'duckduckgo': 'https://duckduckgo.com'
         }
         
         text_lower = text.lower()
+        
+        # Fast exact match first
+        if text_lower in website_mappings:
+            return website_mappings[text_lower]
+        
+        # Then check for partial matches
         for keyword, url in website_mappings.items():
             if keyword in text_lower:
                 return url

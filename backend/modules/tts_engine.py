@@ -45,11 +45,11 @@ class TTSEngine:
             import pyttsx3
             import time
             
-            # Calculate expected speech duration
+            # Calculate expected speech duration for natural speech rate (~180 WPM)
             word_count = len(text.split())
             char_count = len(text)
-            # Conservative estimate: ~2 words per second + pause time
-            estimated_duration = max(2.5, (word_count / 2.0) + 1.0)
+            # Natural speech: ~3 words per second + shorter pause time
+            estimated_duration = max(1.5, (word_count / 3.0) + 0.5)
             
             print(f"TTS: Speaking {word_count} words, estimated {estimated_duration:.1f}s")
             
@@ -71,7 +71,7 @@ class TTSEngine:
                 if voices and len(voices) > 0:
                     engine.setProperty('voice', voices[0].id)
                 
-                engine.setProperty('rate', 120)  # Slower for reliability
+                engine.setProperty('rate', 180)  # Natural human speech rate
                 engine.setProperty('volume', 1.0)  # Full volume
                 
                 print(f"TTS: Using voice engine, speaking now...")
@@ -82,8 +82,8 @@ class TTSEngine:
                 actual_duration = time.time() - start_time
                 
                 # Force minimum wait time if completed too quickly (indicates audio didn't play)
-                if actual_duration < (estimated_duration * 0.3):
-                    remaining_wait = estimated_duration - actual_duration
+                if actual_duration < (estimated_duration * 0.2):  # More lenient for faster speech
+                    remaining_wait = estimated_duration * 0.3  # Shorter wait for faster speech
                     print(f"TTS: Audio likely didn't play, forcing wait of {remaining_wait:.1f}s...")
                     time.sleep(remaining_wait)
                     actual_duration += remaining_wait
@@ -112,15 +112,16 @@ class TTSEngine:
                 elif voices:
                     engine2.setProperty('voice', voices[0].id)
                 
-                engine2.setProperty('rate', 100)  # Even slower
+                engine2.setProperty('rate', 160)  # Still natural but slightly slower
                 engine2.setProperty('volume', 1.0)
                 
                 engine2.say(text)
                 engine2.runAndWait()
                 
-                # Always wait the full estimated duration
-                print(f"TTS: Waiting full {estimated_duration:.1f}s for audio completion...")
-                time.sleep(estimated_duration)
+                # Shorter wait for faster speech
+                wait_time = max(1.0, estimated_duration * 0.4)
+                print(f"TTS: Waiting {wait_time:.1f}s for audio completion...")
+                time.sleep(wait_time)
                 
                 engine2.stop()
                 del engine2
@@ -139,20 +140,20 @@ class TTSEngine:
                 time.sleep(0.5)
                 
                 engine3 = pyttsx3.init(driverName='sapi5')
-                engine3.setProperty('rate', 140)
+                engine3.setProperty('rate', 170)  # Natural speech rate
                 engine3.setProperty('volume', 1.0)
                 
                 # Try to ensure audio system is ready
                 engine3.say(".")  # Tiny test sound
                 engine3.runAndWait()
-                time.sleep(0.2)
+                time.sleep(0.1)  # Shorter delay
                 
                 # Now speak the actual text
                 engine3.say(text)
                 engine3.runAndWait()
                 
-                # Force wait based on word count
-                forced_wait = max(2.0, word_count * 0.4)
+                # Shorter forced wait for natural speech
+                forced_wait = max(1.0, word_count * 0.25)  # Faster calculation
                 print(f"TTS: Forced wait {forced_wait:.1f}s...")
                 time.sleep(forced_wait)
                 
