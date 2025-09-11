@@ -1,8 +1,9 @@
 """
 Application Scanner Module for A.R.I.S.E. AI Assistant
 
-This module scans the system for installed applications and saves their
-executable paths to a JSON file for automation purposes.
+Pure application scanning module that finds installed applications and saves their
+executable paths to a JSON file. Returns text responses only.
+No TTS, STT, or other engine dependencies.
 
 Author: A.R.I.S.E. AI Team
 Date: September 2025
@@ -12,20 +13,15 @@ import os
 import json
 import platform
 import winreg
-import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List, Optional
 import subprocess
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 
 class ApplicationScanner:
     """
-    Scans the system for installed applications and manages their paths.
+    Pure application scanner that finds installed applications. Text responses only.
     """
     
     def __init__(self, output_file: str = "applications.json"):
@@ -86,7 +82,7 @@ class ApplicationScanner:
                             continue
                             
             except FileNotFoundError:
-                logger.warning(f"Registry key not found: {subkey_path}")
+                print(f"Registry key not found: {subkey_path}")
                 continue
                 
         return apps
@@ -168,7 +164,7 @@ class ApplicationScanner:
                                     apps[friendly_name] = exe_path
                                     
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError, json.JSONDecodeError, Exception):
-                logger.warning("Could not scan Windows Store apps via PowerShell")
+                print("Could not scan Windows Store apps via PowerShell")
                 
             # Fallback: Check common UWP app locations
             uwp_base_paths = [
@@ -193,7 +189,7 @@ class ApplicationScanner:
                             continue
                             
         except Exception as e:
-            logger.warning(f"Error scanning Windows Store apps: {e}")
+            print(f"Error scanning Windows Store apps: {e}")
             
         return apps
     
@@ -407,7 +403,7 @@ class ApplicationScanner:
                         apps.update(sub_apps)
                         
         except (PermissionError, OSError) as e:
-            logger.warning(f"Cannot access directory {directory}: {e}")
+            print(f"Cannot access directory {directory}: {e}")
             
         return apps
     
@@ -892,53 +888,53 @@ class ApplicationScanner:
         Returns:
             Dict[str, str]: Dictionary of all found applications and their paths
         """
-        logger.info("Starting comprehensive application scan...")
+        print("Starting comprehensive application scan...")
         
         all_apps = {}
         
         # Scan popular applications first
-        logger.info("Scanning for popular applications...")
+        print("Scanning for popular applications...")
         popular_apps = self.scan_popular_applications()
         all_apps.update(popular_apps)
-        logger.info(f"Found {len(popular_apps)} popular applications")
+        print(f"Found {len(popular_apps)} popular applications")
         
         # Scan gaming platforms and games
-        logger.info("Scanning gaming platforms and games...")
+        print("Scanning gaming platforms and games...")
         gaming_apps = self.scan_gaming_platforms()
         all_apps.update(gaming_apps)
-        logger.info(f"Found {len(gaming_apps)} games")
+        print(f"Found {len(gaming_apps)} games")
         
         # Scan Microsoft Office applications (Windows only)
         if self.system == "Windows":
-            logger.info("Scanning Microsoft Office applications...")
+            print("Scanning Microsoft Office applications...")
             office_apps = self.scan_office_applications()
             all_apps.update(office_apps)
-            logger.info(f"Found {len(office_apps)} Microsoft Office applications")
+            print(f"Found {len(office_apps)} Microsoft Office applications")
         
         # Scan Windows Store apps (Windows only)
         if self.system == "Windows":
-            logger.info("Scanning Windows Store applications...")
+            print("Scanning Windows Store applications...")
             store_apps = self.scan_windows_store_apps()
             all_apps.update(store_apps)
-            logger.info(f"Found {len(store_apps)} Windows Store applications")
+            print(f"Found {len(store_apps)} Windows Store applications")
         
         # Scan common directories
-        logger.info("Scanning common installation directories...")
+        print("Scanning common installation directories...")
         directory_apps = self.scan_common_directories()
         all_apps.update(directory_apps)
-        logger.info(f"Found {len(directory_apps)} applications in common directories")
+        print(f"Found {len(directory_apps)} applications in common directories")
         
         # Scan Windows registry (Windows only)
         if self.system == "Windows":
-            logger.info("Scanning Windows registry...")
+            print("Scanning Windows registry...")
             registry_apps = self.scan_windows_registry()
             all_apps.update(registry_apps)
-            logger.info(f"Found {len(registry_apps)} applications in registry")
+            print(f"Found {len(registry_apps)} applications in registry")
         
         # Remove duplicates and clean up names
         cleaned_apps = self._clean_application_list(all_apps)
         
-        logger.info(f"Total applications found: {len(cleaned_apps)}")
+        print(f"Total applications found: {len(cleaned_apps)}")
         return cleaned_apps
     
     def _clean_application_list(self, apps: Dict[str, str]) -> Dict[str, str]:
@@ -1050,10 +1046,10 @@ class ApplicationScanner:
             with open(self.output_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)
                 
-            logger.info(f"Applications saved to {self.output_file}")
+            print(f"Applications saved to {self.output_file}")
             
         except Exception as e:
-            logger.error(f"Error saving applications to JSON: {e}")
+            print(f"Error saving applications to JSON: {e}")
             raise
     
     def load_from_json(self) -> Dict[str, str]:
@@ -1069,10 +1065,10 @@ class ApplicationScanner:
                 return data.get('applications', {})
                 
         except FileNotFoundError:
-            logger.warning(f"JSON file {self.output_file} not found")
+            print(f"JSON file {self.output_file} not found")
             return {}
         except Exception as e:
-            logger.error(f"Error loading applications from JSON: {e}")
+            print(f"Error loading applications from JSON: {e}")
             return {}
     
     def get_application_path(self, app_name: str) -> Optional[str]:
@@ -1114,7 +1110,7 @@ class ApplicationScanner:
             return self.applications
             
         except Exception as e:
-            logger.error(f"Error during application scan: {e}")
+            print(f"Error during application scan: {e}")
             raise
 
 
@@ -1142,7 +1138,7 @@ def main():
             print(f"  {name}: {path}")
             
     except Exception as e:
-        logger.error(f"Scan failed: {e}")
+        print(f"Scan failed: {e}")
         return 1
         
     return 0

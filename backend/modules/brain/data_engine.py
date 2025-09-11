@@ -1,25 +1,22 @@
 """
 A.R.I.S.E. AI - Real-time Data Engine
 
-Fetches weather, news, and stock data with concise responses.
+Pure data fetching for weather, news, and stock data. Returns text responses only.
+No TTS, STT, or other engine dependencies.
 """
 
 import os
-import sys
 import requests
 import yfinance as yf
 from datetime import datetime
 from dotenv import load_dotenv
-
-sys.path.append('..')
-from tts_engine import TTSEngine
 
 # Load environment variables
 load_dotenv()
 
 
 class DataEngine:
-    """Real-time data fetching for weather, news, and stocks."""
+    """Pure data fetching for weather, news, and stocks. Text responses only."""
     
     def __init__(self):
         """Initialize data engine with API keys."""
@@ -30,15 +27,7 @@ class DataEngine:
         # Default location (can be changed)
         self.default_city = "New York"
         
-        print("Data engine initialized")
-    
-    def speak_response(self, text: str):
-        """Speak response using TTS engine."""
-        try:
-            tts = TTSEngine()
-            tts.speak(text)
-        except Exception as e:
-            print(f"TTS error: {e}")
+        print("Data engine initialized - Text mode only")
     
     def _get_country_name(self, country_code: str) -> str:
         """Get friendly country name from code."""
@@ -258,7 +247,6 @@ class DataEngine:
                         break
             
             response = self.get_weather(city)
-            self.speak_response(response)
             return response
         
         # Stock requests
@@ -315,7 +303,6 @@ class DataEngine:
                 symbol = "AAPL"
             
             response = self.get_stock(symbol)
-            self.speak_response(response)
             return response
         
         # News requests  
@@ -351,7 +338,6 @@ class DataEngine:
                     break
             
             response = self.get_news(topic, country)
-            self.speak_response(response)
             return response
         
         else:
@@ -366,19 +352,16 @@ def main():
     print("Testing weather...")
     weather = engine.get_weather("London")
     print(f"Weather: {weather}")
-    engine.speak_response(weather)
     
     # Test news
     print("\nTesting news...")
     news = engine.get_news("technology")
     print(f"News: {news}")
-    engine.speak_response(news)
     
     # Test stock
     print("\nTesting stock...")
     stock = engine.get_stock("AAPL")
     print(f"Stock: {stock}")
-    engine.speak_response(stock)
 
 
 if __name__ == "__main__":

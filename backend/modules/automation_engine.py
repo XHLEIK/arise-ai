@@ -1,7 +1,14 @@
-# Explanation: Automation engine to open applications and websites based on user voice commands
+# Explanation: Pure automation engine to open applications and websites based on user commands
 # Assumptions: applications.json exists with app paths, default browser handles URLs, subprocess can launch apps
 # Files to create: backend/modules/automation_engine.py
 # Run commands: python automation_engine.py
+
+"""
+A.R.I.S.E. AI - Automation Engine
+
+Pure automation engine for opening applications and websites. Returns text responses only.
+No TTS, STT, or other engine dependencies.
+"""
 
 import json
 import os
@@ -11,9 +18,12 @@ import re
 from typing import Dict, Optional, Tuple
 
 class AutomationEngine:
+    """Pure automation engine for opening applications and websites. Text responses only."""
     def __init__(self):
+        """Initialize automation engine with applications database."""
         self.applications = {}
         self.load_applications()
+        print("Automation engine initialized - Pure automation mode only")
     
     def load_applications(self) -> None:
         """Load applications from applications.json file"""

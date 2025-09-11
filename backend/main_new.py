@@ -126,17 +126,16 @@ class ARISEMain:
         """Centralized TTS function - ALL responses go through here."""
         if not text or not text.strip():
             return
-        
-        # IMPORTANT: Speak FIRST, then display text
-        tts_success = False
+            
+        print(f"🤖 A.R.I.S.E: {text}")
         
         try:
             # Always create fresh TTS instance for maximum reliability
             tts_instance = TTSEngine()
-            tts_success = tts_instance.speak(text)
+            success = tts_instance.speak(text)
             
-            if not tts_success:
-                print("⚠️ Primary TTS failed - trying backup method...")
+            if not success:
+                print("⚠️ TTS failed - trying backup method...")
                 # Backup TTS attempt
                 try:
                     import pyttsx3
@@ -146,19 +145,12 @@ class ARISEMain:
                     backup_engine.say(text)
                     backup_engine.runAndWait()
                     backup_engine.stop()
-                    tts_success = True
                     print("✅ Backup TTS successful")
                 except Exception as backup_e:
                     print(f"❌ Backup TTS also failed: {backup_e}")
                     
         except Exception as e:
-            print(f"❌ TTS error in _speak(): {e}")
-        
-        # Only print to terminal AFTER TTS completes (successful or not)
-        if tts_success:
-            print(f"🤖 A.R.I.S.E: {text}")
-        else:
-            print(f"🤖 A.R.I.S.E (no audio): {text}")
+            print(f"❌ TTS error: {e}")
     
     def _greet_user(self):
         """Step 2: Greet user and wait for response."""
