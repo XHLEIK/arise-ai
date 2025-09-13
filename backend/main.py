@@ -297,7 +297,7 @@ class ARISEMain:
             if request_type == 'standby':
                 # Standby mode request
                 self.standby_mode = True
-                response = "Going to standby mode. Say 'Hey A.R.I.S.E.' to wake me up."
+                response = "Going to standby mode. Say 'Hey arise' or 'Hey A.R.I.S.E.' to wake me up."
                 self._speak(response)
                 self.memory.add_message("assistant", response)
                 # Enter standby mode
@@ -355,7 +355,7 @@ class ARISEMain:
     
     def _enter_standby_mode(self):
         """Enter standby mode, listen only for wake command."""
-        print("💤 Entering standby mode... Say 'Hey A.R.I.S.E.' to wake up")
+        print("💤 Entering standby mode... Say 'Hey arise' or 'arise' to wake up")
         
         while self.standby_mode:
             try:
@@ -365,10 +365,18 @@ class ARISEMain:
                 if user_input:
                     user_lower = user_input.lower()
                     
-                    # Check for wake commands
-                    wake_commands = ['hey arise', 'hey a.r.i.s.e', 'arise wake up', 'wake up arise', 'arise']
+                    # Check for wake commands - more flexible detection
+                    wake_commands = [
+                        'hey arise', 'hey a.r.i.s.e', 'hey a r i s e',
+                        'arise wake up', 'wake up arise', 'arise',
+                        'hey arize', 'hey a rise', 'wake arise',
+                        'a.r.i.s.e', 'arrise', 'a rise'
+                    ]
                     
-                    if any(wake_cmd in user_lower for wake_cmd in wake_commands):
+                    # Also check if "arise" appears anywhere in the input
+                    contains_arise = any(word in user_lower for word in ['arise', 'arize', 'a.r.i.s.e', 'arrise'])
+                    
+                    if any(wake_cmd in user_lower for wake_cmd in wake_commands) or contains_arise:
                         self.standby_mode = False
                         response = "I'm awake! How can I help you?"
                         self._speak(response)

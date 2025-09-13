@@ -222,6 +222,11 @@ npm run dev
 "Sleep mode"
 "Stand by"
 "Enter standby"
+
+Wake commands:
+"Hey arise"
+"Arise"
+"Wake up arise"
 ```
 
 </td>

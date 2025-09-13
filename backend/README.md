@@ -88,9 +88,9 @@ That's it! A.R.I.S.E. will:
 
 👤 You: "Go to standby"
 😴 Standby: Enters sleep mode, listens only for wake command
-🔊 A.R.I.S.E: "Going to standby mode. Say 'Hey A.R.I.S.E.' to wake me up."
+🔊 A.R.I.S.E: "Going to standby mode. Say 'Hey arise' or 'Hey A.R.I.S.E.' to wake me up."
 
-👤 You: "Hey A.R.I.S.E." (while in standby)
+👤 You: "arise" (while in standby)
 🔄 Wake: Exits standby mode and resumes normal operation
 🔊 A.R.I.S.E: "I'm awake! How can I help you?"
 ```
@@ -182,7 +182,8 @@ All engines are pre-optimized for best performance:
 
 ### Standby Mode Features
 - **Voice Activation**: Say "go to standby" or "sleep mode" to enter standby
-- **Wake Commands**: "Hey A.R.I.S.E." or "Hey arise" to wake up
+- **Wake Commands**: "arise", "hey arise", "wake up arise", or "A.R.I.S.E." to wake up
+- **Flexible Detection**: Recognizes various pronunciations and spellings of "arise"
 - **Power Saving**: Reduced processing while maintaining voice recognition
 - **Selective Listening**: Ignores all commands except wake phrases in standby
 - **Seamless Resume**: Returns to full functionality immediately upon waking
