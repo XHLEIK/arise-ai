@@ -20,6 +20,7 @@ class STTEngine:
         """Initialize STT engine with specified sample rate."""
         self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone(sample_rate=sample_rate)
+        self.last_audio = None  # Store last recorded audio for voice verification
         
         # Calibrate microphone for ambient noise
         print("STT engine initialized - Calibrating microphone...")
@@ -30,6 +31,7 @@ class STTEngine:
     def listen_once(self, timeout: int = 15) -> Optional[str]:
         """
         Listen for speech and convert to text with extended timeout.
+        Stores audio for potential voice verification use.
         
         Args:
             timeout: Max seconds to wait for speech (default 15s)
@@ -45,6 +47,9 @@ class STTEngine:
                 # Longer phrase_time_limit allows complete sentences
                 audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=10)
             
+            # Store the audio for potential voice verification
+            self.last_audio = audio
+            
             print("Processing speech...")
             text = self.recognizer.recognize_google(audio)
             return text
@@ -57,6 +62,41 @@ class STTEngine:
             return None
         except Exception as e:
             print(f"STT error: {e}")
+            return None
+    
+    def save_last_audio_to_file(self, filename: str = None) -> Optional[str]:
+        """
+        Save the last recorded audio to a file for voice verification.
+        
+        Args:
+            filename: Output filename (auto-generated if None)
+            
+        Returns:
+            Path to saved audio file or None if failed
+        """
+        import tempfile
+        import os
+        from datetime import datetime
+        
+        if self.last_audio is None:
+            print("No audio available to save")
+            return None
+        
+        try:
+            if filename is None:
+                # Generate unique filename
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = os.path.join(tempfile.gettempdir(), f"arise_voice_{timestamp}.wav")
+            
+            # Save audio to WAV file
+            with open(filename, "wb") as f:
+                f.write(self.last_audio.get_wav_data())
+            
+            print(f"Last audio saved successfully: {filename}")
+            return filename
+            
+        except Exception as e:
+            print(f"Audio saving error: {e}")
             return None
     
     def record_audio_file(self, duration: int = 5, filename: str = None) -> Optional[str]:

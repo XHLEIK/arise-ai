@@ -27,6 +27,7 @@
 |---------|--------|-------------|
 | 🎤 **Voice Recognition** | ✅ Complete | Real-time speech-to-text with Google Speech Recognition |
 | 🔊 **Text-to-Speech** | ✅ Complete | Natural voice responses at 180 WPM (human-like speed) |
+| 🔐 **Voice Security** | ✅ Complete | SpeechBrain-powered voice enrollment and verification |
 | 🧠 **Multi-Engine Architecture** | ✅ Complete | Chat, Data, and Automation engines working independently |
 | ⚡ **Ultra-Fast Automation** | ✅ Complete | Opens applications in ~0.06 seconds |
 | 🌐 **Real-time Data** | ✅ Complete | Weather, stocks, news, and web information |
@@ -34,6 +35,7 @@
 | 💭 **Persistent Memory** | ✅ Complete | Session history and long-term fact storage with context awareness |
 | 😴 **Standby Mode** | ✅ Complete | Voice-controlled sleep mode with wake command functionality |
 | 📍 **Location Awareness** | ✅ Complete | Auto-detects location from user facts for weather and data services |
+| 🎯 **Seamless Verification** | ✅ Complete | Single voice input for both command and identity verification |
 
 ---
 
@@ -45,6 +47,8 @@
 
 ### 🎯 Core Functionality
 - 🎙️ **Voice-First Interface**: Speak naturally, no keywords needed
+- 🔐 **Secure Voice Recognition**: SpeechBrain-powered speaker verification with one-time enrollment
+- 🎯 **Seamless Verification**: Single voice input handles both commands and identity verification
 - 🧠 **Intelligent Classification**: Automatically routes requests to appropriate engine
 - 💬 **Conversational AI**: Powered by Google Gemini for natural conversations
 - 📊 **Real-time Data**: Live weather, stock prices, news headlines
@@ -61,7 +65,9 @@
 - 🚀 **Optimized Performance**: Sub-second response times
 - 🎯 **Reliable TTS**: Audio plays for every single response
 - 🔧 **Modular Design**: Independent engines with centralized coordination
-- 📝 **Comprehensive Logging**: Full debug and performance tracking
+- � **Advanced Security**: SpeechBrain AI-powered voice authentication with dual verification methods
+- 🎯 **Zero Friction UX**: Single voice input for command processing and identity verification
+- �📝 **Comprehensive Logging**: Full debug and performance tracking
 - 🛡️ **Error Handling**: Graceful fallbacks and recovery mechanisms
 - 🔄 **Auto-Recovery**: Self-healing system architecture
 
@@ -78,10 +84,11 @@
 | Category | Technologies |
 |----------|-------------|
 | **Backend** | Python 3.10+, speech_recognition, pyttsx3, google-generativeai, requests |
+| **AI/ML** | SpeechBrain, torch, torchaudio, librosa for voice recognition |
 | **Frontend** | Vite + React, Electron for desktop app |
 | **Voice** | Google Speech Recognition, Windows SAPI Text-to-Speech |
 | **APIs** | Google Gemini AI, OpenWeatherMap, News APIs |
-| **Architecture** | Event-driven, multi-engine with centralized TTS |
+| **Architecture** | Event-driven, multi-engine with centralized TTS and voice security |
 
 </div>
 
@@ -95,7 +102,8 @@
 │   ├── 🎯 main.py                    # Main orchestrator with centralized TTS
 │   ├── 📂 modules/
 │   │   ├── 🔊 tts_engine.py         # Optimized text-to-speech (180 WPM)
-│   │   ├── 🎤 stt_engine.py         # Speech recognition
+│   │   ├── 🎤 stt_engine.py         # Speech recognition with audio recording
+│   │   ├── 🔐 voice_recognition.py  # SpeechBrain-powered voice security
 │   │   ├── ⚙️ automation_engine.py   # Ultra-fast app launching
 │   │   ├── 📱 app_scanner.py        # System application detection
 │   │   ├── 💭 memory_manager.py     # Session history and facts storage
@@ -105,7 +113,10 @@
 │   ├── 📁 data/
 │   │   ├── 📋 applications.json     # Scanned applications database
 │   │   ├── 📝 facts.json           # Long-term memory facts
-│   │   └── 💬 sessions/             # Conversation session storage
+│   │   ├── 🔐 users.json           # Voice recognition profiles
+│   │   ├── 💬 sessions/             # Conversation session storage
+│   │   ├── 🎤 voice_features/       # Voice enrollment data
+│   │   └── 🤖 speechbrain_cache/    # AI model cache
 │   └── 📄 requirements.txt
 ├── 🎨 frontend/
 │   ├── 📂 src/                      # React components
@@ -229,6 +240,19 @@ Wake commands:
 "Wake up arise"
 ```
 
+#### 🔐 **Voice Security Examples**
+```
+First time setup:
+"Enroll my voice"
+"Setup voice recognition"
+"Register my voice"
+
+After enrollment (seamless verification):
+"Hello A.R.I.S.E." → Automatically verified + processed
+"What's the weather?" → Single input for command + verification
+"Open Chrome" → No double voice input needed
+```
+
 </td>
 </tr>
 </table>
@@ -273,6 +297,7 @@ graph TD
 | **Data Engine** | 📊 | Real-time information (weather, stocks, news) | < 1 second |
 | **Automation Engine** | ⚙️ | System tasks and application launching | 0.06 seconds |
 | **STT Engine** | 🎤 | Speech recognition and audio processing | Real-time |
+| **Voice Recognition** | 🔐 | SpeechBrain-powered speaker verification | 0.6s verification |
 | **TTS Engine** | 🔊 | Voice synthesis with optimized timing | 180 WPM |
 | **App Scanner** | 📱 | System application discovery and management | Background |
 | **Memory Manager** | 💭 | Session storage and long-term fact retention | Instant |
@@ -338,7 +363,9 @@ graph TD
 
 | Achievement | Impact | Status |
 |-------------|---------|---------|
-| 🔊 **Fixed TTS Consistency** | Audio now plays for every response | ✅ Complete |
+| � **Voice Security Integration** | SpeechBrain-powered speaker verification | ✅ Complete |
+| 🎯 **Seamless Verification** | Single voice input for command + identity | ✅ Complete |
+| �🔊 **Fixed TTS Consistency** | Audio now plays for every response | ✅ Complete |
 | ⚡ **Optimized Voice Speed** | Natural 180 WPM speech rate | ✅ Complete |
 | 🚀 **Ultra-Fast Automation** | 30-second delays → 0.06 seconds | ✅ Complete |
 | 🏗️ **Centralized Architecture** | Eliminated circular dependencies | ✅ Complete |

@@ -5,6 +5,10 @@
 pathlib2>=2.3.7
 typing-extensions>=4.0.0
 
+# Speech Recognition dependencies
+SpeechRecognition>=3.10.0
+pyaudio>=0.2.11
+
 # TTS (Text-to-Speech) dependencies
 pyttsx3>=2.90
 pywin32>=306; sys_platform == "win32"

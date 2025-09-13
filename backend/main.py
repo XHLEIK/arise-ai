@@ -257,7 +257,8 @@ class ARISEMain:
             'delete memory', 'remove memory', 'clear memory', 'forget everything',
             'erase memory', 'wipe memory', 'reset memory', 'delete sessions',
             'clear sessions', 'forget all', 'delete all memory', 'delete my memory',
-            'clear the memory', 'remove all memory', 'wipe all memory'
+            'clear the memory', 'remove all memory', 'wipe all memory',
+            'delete all sessions', 'remove all sessions', 'clear all sessions'
         ]
         
         # Standby mode keywords
@@ -526,8 +527,8 @@ class ARISEMain:
                     not any(keyword in user_input.lower() for keyword in ['voice_enroll', 'enroll my voice'])):
                     
                     print("🔐 Performing voice verification...")
-                    # Record a short audio sample for verification
-                    verification_audio = self.stt.record_audio_file(duration=3)
+                    # Use the audio from the speech we just captured instead of recording new audio
+                    verification_audio = self.stt.save_last_audio_to_file()
                     
                     if verification_audio:
                         if not self._verify_voice(verification_audio):
