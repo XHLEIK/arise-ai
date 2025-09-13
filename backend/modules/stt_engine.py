@@ -59,6 +59,45 @@ class STTEngine:
             print(f"STT error: {e}")
             return None
     
+    def record_audio_file(self, duration: int = 5, filename: str = None) -> Optional[str]:
+        """
+        Record audio to a file for voice recognition enrollment/verification.
+        
+        Args:
+            duration: Recording duration in seconds
+            filename: Output filename (auto-generated if None)
+            
+        Returns:
+            Path to recorded audio file or None if failed
+        """
+        import tempfile
+        import wave
+        import os
+        from datetime import datetime
+        
+        try:
+            if filename is None:
+                # Generate unique filename
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = os.path.join(tempfile.gettempdir(), f"arise_voice_{timestamp}.wav")
+            
+            print(f"Recording audio for {duration} seconds...")
+            
+            with self.microphone as source:
+                # Record audio with specified duration
+                audio = self.recognizer.listen(source, timeout=1, phrase_time_limit=duration)
+            
+            # Save audio to WAV file
+            with open(filename, "wb") as f:
+                f.write(audio.get_wav_data())
+            
+            print(f"Audio recorded successfully: {filename}")
+            return filename
+            
+        except Exception as e:
+            print(f"Audio recording error: {e}")
+            return None
+    
     def listen_and_respond(self):
         """Listen for user speech and respond via print (TTS handled elsewhere)."""
         text = self.listen_once()

@@ -15,6 +15,7 @@ A.R.I.S.E. backend is **complete and production-ready** with all core features i
 - **⚙️ Automation Engine**: Ultra-fast application launching (0.06s)
 - **📱 App Scanner**: System application discovery and management
 - **💭 Memory Manager**: Session buffer and long-term fact storage with context building
+- **🔐 Voice Recognition**: Secure user enrollment and verification using SpeechBrain
 
 ### 🏗️ Architecture Features
 
@@ -93,6 +94,22 @@ That's it! A.R.I.S.E. will:
 👤 You: "arise" (while in standby)
 🔄 Wake: Exits standby mode and resumes normal operation
 🔊 A.R.I.S.E: "I'm awake! How can I help you?"
+
+👤 You: "Enroll my voice"
+🔐 Voice: Prompts for voice enrollment
+🔊 A.R.I.S.E: "I'll help you enroll your voice. Please say something for about 5 seconds..."
+🎤 Recording: Records voice sample and creates secure profile
+🔊 A.R.I.S.E: "Excellent! Your voice has been enrolled successfully."
+
+👤 You: "Hello A.R.I.S.E." (after enrollment)
+🔐 Verification: Automatically verifies voice before processing
+✅ Verified: Voice matches master user profile
+🔊 A.R.I.S.E: "Hello! How can I help you?"
+
+👤 Unknown Person: "What can you do?"
+🔐 Verification: Voice doesn't match master profile
+❌ Denied: Security response activated
+🔊 A.R.I.S.E: "Your voice doesn't match my master's voice."
 ```
 
 ---
@@ -106,6 +123,7 @@ backend/
 ├── modules/
 │   ├── tts_engine.py          # 🔊 Optimized text-to-speech (180 WPM)
 │   ├── stt_engine.py          # 🎤 Speech recognition engine
+│   ├── voice_recognition.py   # 🔐 Secure voice enrollment and verification
 │   ├── automation_engine.py    # ⚙️ Ultra-fast app launching
 │   ├── app_scanner.py         # 📱 System application detection
 │   ├── memory_manager.py      # 💭 Session buffer and facts storage
@@ -116,7 +134,10 @@ backend/
 └── data/
     ├── applications.json       # 📁 Scanned applications database
     ├── facts.json             # 💭 Long-term memory facts
-    └── sessions/              # 💬 Conversation session storage
+    ├── users.json             # 🔐 Voice recognition user profiles
+    ├── sessions/              # 💬 Conversation session storage
+    ├── voice_features/        # 🔐 Voice enrollment data and audio
+    └── speechbrain_cache/     # 🤖 SpeechBrain model cache
 ```
 
 ---
@@ -131,8 +152,16 @@ backend/
 
 ### 🎤 STT Engine (`stt_engine.py`)
 - **Provider**: Google Speech Recognition
-- **Features**: Real-time transcription, automatic microphone calibration
+- **Features**: Real-time transcription, automatic microphone calibration, audio file recording
 - **Timeout**: 30-second listening window with phrase detection
+- **Voice Support**: Records audio samples for voice recognition enrollment/verification
+
+### 🔐 Voice Recognition Engine (`voice_recognition.py`)
+- **AI Model**: SpeechBrain ECAPA-VOXCELEB pre-trained speaker verification
+- **Security**: Dual verification (SpeechBrain + audio features) with conservative thresholds
+- **Enrollment**: One-time master user voice registration with UUID identification
+- **Verification**: Real-time voice matching with 0.75 confidence threshold
+- **Responses**: Randomized security denials for unauthorized users
 
 ### 🧠 Chat Brain (`brain/chat_brain.py`)
 - **AI Model**: Google Gemini

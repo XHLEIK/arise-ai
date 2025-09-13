@@ -12,6 +12,13 @@ pywin32>=306; sys_platform == "win32"
 # Logging and utilities
 colorlog>=6.0.0
 
+# Voice Recognition dependencies  
+speechbrain>=1.0.0
+librosa>=0.10.0
+torch>=2.0.0
+torchaudio>=2.0.0
+numpy>=1.24.0
+
 # Future dependencies for other modules
 # speech_recognition>=3.10.0
 # pyttsx3>=2.90

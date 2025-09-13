@@ -14,6 +14,7 @@ Simple Flow:
 import os
 import sys
 import json
+import tempfile
 from pathlib import Path
 
 # Add modules to path
@@ -27,6 +28,7 @@ from modules.automation_engine import AutomationEngine
 from modules.brain.chat_brain import ChatBrain
 from modules.brain.data_engine import DataEngine
 from modules.memory_manager import MemoryManager
+from modules.voice_recognition import VoiceRecognition
 
 
 class ARISEMain:
@@ -44,6 +46,7 @@ class ARISEMain:
         self.chat = None
         self.data = None
         self.memory = None
+        self.voice_recognition = None
         
         # System state
         self.running = False
@@ -85,6 +88,10 @@ class ARISEMain:
             # Initialize App Scanner
             print("Initializing App Scanner...")
             self.scanner = ApplicationScanner("data/applications.json")
+            
+            # Initialize Voice Recognition
+            print("Initializing Voice Recognition...")
+            self.voice_recognition = VoiceRecognition()
             
             print("✅ All engines initialized successfully!")
             
@@ -128,6 +135,62 @@ class ARISEMain:
                         print("❌ Application database is empty")
             except Exception as e:
                 print(f"❌ Error reading application database: {e}")
+    
+    def _check_voice_enrollment(self):
+        """Check if master user is enrolled, prompt for enrollment if needed."""
+        print("🔐 Checking voice enrollment...")
+        
+        if not self.voice_recognition.is_master_enrolled():
+            print("❌ No master user enrolled.")
+            self._speak("Voice recognition is not set up. Would you like to enroll your voice for security? This will help me recognize you in the future.")
+            
+            response = self.stt.listen_once(timeout=15)
+            
+            if response and any(word in response.lower() for word in ['yes', 'yeah', 'sure', 'okay', 'ok']):
+                self._speak("Great! Please say something for about 5 seconds. I'll use this to learn your voice. Say something like 'Hello A.R.I.S.E., this is my voice for enrollment.'")
+                
+                # Record enrollment audio
+                print("🎤 Recording enrollment audio...")
+                enrollment_audio = self.stt.record_audio_file(duration=5)
+                
+                if enrollment_audio:
+                    # Enroll the user
+                    success, message = self.voice_recognition.enroll_user("Master User", enrollment_audio)
+                    
+                    if success:
+                        self._speak("Perfect! Your voice has been enrolled successfully. I'll now be able to recognize you for secure conversations.")
+                        print(f"✅ Voice enrollment successful: {message}")
+                    else:
+                        self._speak("I had trouble enrolling your voice. We can try again later, but I'll continue without voice recognition for now.")
+                        print(f"❌ Voice enrollment failed: {message}")
+                else:
+                    self._speak("I couldn't record your voice. We'll continue without voice recognition for now.")
+                    print("❌ Audio recording failed")
+            else:
+                self._speak("Okay, we'll skip voice enrollment for now. You can always set it up later by saying 'enroll my voice'.")
+                print("ℹ️ User declined voice enrollment")
+        else:
+            master_user = self.voice_recognition.get_master_user()
+            print(f"✅ Master user '{master_user['name']}' is enrolled (created: {master_user['created_at']})")
+    
+    def _verify_voice(self, audio_file_path: str) -> bool:
+        """Verify if the voice matches the enrolled master user."""
+        try:
+            is_recognized, message, confidence = self.voice_recognition.verify_voice(audio_file_path)
+            
+            if is_recognized:
+                print(f"✅ Voice verified: {message} (confidence: {confidence:.2f})")
+                return True
+            else:
+                print(f"❌ Voice verification failed: {message} (confidence: {confidence:.2f})")
+                # Get and speak security response
+                security_response = self.voice_recognition.get_security_response()
+                self._speak(security_response)
+                return False
+                
+        except Exception as e:
+            print(f"❌ Voice verification error: {e}")
+            return True  # Allow access if verification fails (graceful degradation)
     
     def _speak(self, text: str):
         """Centralized TTS function - ALL responses go through here."""
@@ -202,6 +265,17 @@ class ARISEMain:
             'go to standby', 'standby mode', 'go to sleep', 'sleep mode',
             'stand by', 'enter standby', 'go standby', 'sleep now'
         ]
+        
+        # Voice enrollment keywords
+        voice_enrollment_keywords = [
+            'enroll my voice', 'setup voice', 'voice enrollment', 'enroll voice',
+            'setup voice recognition', 'voice setup', 'register my voice',
+            'add my voice', 'learn my voice', 'voice training'
+        ]
+        
+        # Check for voice enrollment requests
+        if any(keyword in user_lower for keyword in voice_enrollment_keywords):
+            return 'voice_enroll'
         
         # Check for standby requests
         if any(keyword in user_lower for keyword in standby_keywords):
@@ -294,7 +368,29 @@ class ARISEMain:
         print(f"📍 Request type: {request_type}")
         
         try:
-            if request_type == 'standby':
+            if request_type == 'voice_enroll':
+                # Voice enrollment request
+                self._speak("I'll help you enroll your voice. Please say something for about 5 seconds when I tell you to start.")
+                self._speak("Ready? Start speaking now...")
+                
+                # Record enrollment audio
+                enrollment_audio = self.stt.record_audio_file(duration=5)
+                
+                if enrollment_audio:
+                    # Enroll or re-enroll the user
+                    success, message = self.voice_recognition.enroll_user("Master User", enrollment_audio)
+                    
+                    if success:
+                        response = "Excellent! Your voice has been enrolled successfully. I can now recognize you for secure conversations."
+                    else:
+                        response = f"I had trouble enrolling your voice. {message}"
+                else:
+                    response = "I couldn't record your voice. Please try again later."
+                
+                self._speak(response)
+                self.memory.add_message("assistant", response)
+                
+            elif request_type == 'standby':
                 # Standby mode request
                 self.standby_mode = True
                 response = "Going to standby mode. Say 'Hey arise' or 'Hey A.R.I.S.E.' to wake me up."
@@ -403,6 +499,9 @@ class ARISEMain:
             # Step 1: Check app database
             self._check_app_database()
             
+            # Step 1.5: Check voice enrollment
+            self._check_voice_enrollment()
+            
             # Step 2: Greet user and wait for response
             self._greet_user()
             
@@ -420,6 +519,35 @@ class ARISEMain:
                 
                 # Add user input to memory
                 self.memory.add_message("user", user_input)
+                
+                # Voice verification checkpoint (if master is enrolled and not in standby)
+                if (self.voice_recognition.is_master_enrolled() and 
+                    not self.standby_mode and 
+                    not any(keyword in user_input.lower() for keyword in ['voice_enroll', 'enroll my voice'])):
+                    
+                    print("🔐 Performing voice verification...")
+                    # Record a short audio sample for verification
+                    verification_audio = self.stt.record_audio_file(duration=3)
+                    
+                    if verification_audio:
+                        if not self._verify_voice(verification_audio):
+                            # Voice verification failed - deny access and continue listening
+                            print("❌ Access denied - voice verification failed")
+                            # Clean up temporary file
+                            try:
+                                os.remove(verification_audio)
+                            except:
+                                pass
+                            continue  # Skip processing this request
+                        else:
+                            print("✅ Voice verification passed")
+                            # Clean up temporary file
+                            try:
+                                os.remove(verification_audio)
+                            except:
+                                pass
+                    else:
+                        print("⚠️ Could not verify voice - proceeding with caution")
                 
                 # Check for exit
                 if self._should_exit(user_input):
