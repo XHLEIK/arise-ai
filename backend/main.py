@@ -26,6 +26,7 @@ from modules.app_scanner import ApplicationScanner
 from modules.automation_engine import AutomationEngine
 from modules.brain.chat_brain import ChatBrain
 from modules.brain.data_engine import DataEngine
+from modules.memory_manager import MemoryManager
 
 
 class ARISEMain:
@@ -42,6 +43,7 @@ class ARISEMain:
         self.automation = None
         self.chat = None
         self.data = None
+        self.memory = None
         
         # System state
         self.running = False
@@ -78,6 +80,10 @@ class ARISEMain:
             # Initialize App Scanner
             print("Initializing App Scanner...")
             self.scanner = ApplicationScanner("data/applications.json")
+            
+            # Initialize Memory Manager
+            print("Initializing Memory Manager...")
+            self.memory = MemoryManager()
             
             print("✅ All engines initialized successfully!")
             
@@ -193,6 +199,71 @@ class ARISEMain:
         # Default to chat for everything else
         return 'chat'
     
+    def _build_memory_context(self) -> str:
+        """Build context string from recent session and facts for AI."""
+        context_parts = []
+        
+        # Add facts from long-term memory
+        facts = self.memory.load_facts()
+        if facts:
+            facts_text = ", ".join([f"{k}: {v}" for k, v in facts.items()])
+            context_parts.append(f"User facts: {facts_text}")
+        
+        # Add recent conversation from session buffer (last 5 messages)
+        if self.memory.session_buffer:
+            recent_messages = self.memory.session_buffer[-10:]  # Last 10 messages for context
+            conversation = []
+            for msg in recent_messages:
+                role = "User" if msg["role"] == "user" else "AI"
+                conversation.append(f"{role}: {msg['content']}")
+            if conversation:
+                context_parts.append(f"Recent conversation: {' | '.join(conversation)}")
+        
+        return " | ".join(context_parts) if context_parts else ""
+    
+    def _extract_and_update_facts(self, user_input: str, ai_response: str):
+        """Extract important facts from conversation and update long-term memory."""
+        # Simple fact extraction for location, name, preferences
+        facts_to_update = {}
+        
+        # Extract location information
+        location_keywords = ['live in', 'from', 'located in', 'based in', 'i am in']
+        for keyword in location_keywords:
+            if keyword in user_input.lower():
+                # Simple extraction - this could be made more sophisticated
+                words = user_input.lower().split()
+                try:
+                    keyword_index = next(i for i, word in enumerate(words) if keyword.split()[0] in word)
+                    # Get the next 1-2 words after the keyword
+                    if keyword_index + 1 < len(words):
+                        location = words[keyword_index + 1]
+                        if keyword_index + 2 < len(words) and len(words[keyword_index + 2]) > 2:
+                            location += f" {words[keyword_index + 2]}"
+                        facts_to_update['location'] = location.title()
+                except:
+                    pass
+        
+        # Extract name information
+        if 'my name is' in user_input.lower() or 'i am' in user_input.lower():
+            words = user_input.lower().split()
+            try:
+                if 'my name is' in user_input.lower():
+                    name_index = user_input.lower().find('my name is') + len('my name is')
+                    name = user_input[name_index:].strip().split()[0]
+                    facts_to_update['name'] = name.title()
+                elif 'i am' in user_input.lower() and len(words) > 2:
+                    i_am_index = next(i for i, word in enumerate(words) if word == 'i' and i+1 < len(words) and words[i+1] == 'am')
+                    if i_am_index + 2 < len(words):
+                        name = words[i_am_index + 2]
+                        if name.isalpha() and len(name) > 1:
+                            facts_to_update['name'] = name.title()
+            except:
+                pass
+        
+        # Update facts if any were extracted
+        if facts_to_update:
+            self.memory.update_facts(facts_to_update)
+    
     def _process_request(self, user_input: str):
         """Process user request through appropriate engine."""
         request_type = self._classify_request(user_input)
@@ -204,6 +275,7 @@ class ARISEMain:
                 # Data engine request
                 response = self.data.process_data_request(user_input)
                 self._speak(response)  # All responses go through TTS
+                self.memory.add_message("assistant", response)
                 
             elif request_type == 'automation':
                 # Automation engine request
@@ -213,16 +285,23 @@ class ARISEMain:
                 else:
                     response = f"I couldn't do that. {message}"
                 self._speak(response)  # All responses go through TTS
+                self.memory.add_message("assistant", response)
                 
             else:  # chat
-                # Chat brain request
-                response = self.chat.get_response(user_input)
+                # Chat brain request with memory context
+                memory_context = self._build_memory_context()
+                response = self.chat.get_response(user_input, memory_context)
                 self._speak(response)  # All responses go through TTS
+                self.memory.add_message("assistant", response)
+                
+                # Extract and store important facts from conversation
+                self._extract_and_update_facts(user_input, response)
                 
         except Exception as e:
             error_msg = "Sorry, I encountered an error processing your request."
             print(f"❌ Request processing error: {e}")
             self._speak(error_msg)  # Even errors go through TTS
+            self.memory.add_message("assistant", error_msg)
     
     def _should_exit(self, user_input: str) -> bool:
         """Check if user wants to exit."""
@@ -250,9 +329,16 @@ class ARISEMain:
                     
                 print(f"👤 You: {user_input}")
                 
+                # Add user input to memory
+                self.memory.add_message("user", user_input)
+                
                 # Check for exit
                 if self._should_exit(user_input):
-                    self._speak("Goodbye! Have a great day!")
+                    response = "Goodbye! Have a great day!"
+                    self._speak(response)
+                    self.memory.add_message("assistant", response)
+                    # Save session before exit
+                    self.memory.save_session()
                     break
                 
                 # Process request through appropriate engine
@@ -261,12 +347,19 @@ class ARISEMain:
                 # Step 4: Wait for next request (loop continues)
                 
         except KeyboardInterrupt:
-            self._speak("Goodbye!")
+            response = "Goodbye!"
+            self._speak(response)
+            self.memory.add_message("assistant", response)
+            # Save session before shutdown
+            self.memory.save_session()
             print("\n👋 A.R.I.S.E. shutting down...")
         except Exception as e:
             error_msg = "I'm experiencing technical difficulties. Shutting down."
             print(f"❌ Main loop error: {e}")
             self._speak(error_msg)
+            self.memory.add_message("assistant", error_msg)
+            # Save session even on error
+            self.memory.save_session()
 
 
 def main():
@@ -278,8 +371,14 @@ def main():
         
     except KeyboardInterrupt:
         print("\n👋 A.R.I.S.E. interrupted by user")
+        # Ensure session is saved if arise instance exists
+        if 'arise' in locals() and hasattr(arise, 'memory'):
+            arise.memory.save_session()
     except Exception as e:
         print(f"❌ Fatal error: {e}")
+        # Ensure session is saved if arise instance exists
+        if 'arise' in locals() and hasattr(arise, 'memory'):
+            arise.memory.save_session()
     finally:
         print("🔌 A.R.I.S.E. offline")
 

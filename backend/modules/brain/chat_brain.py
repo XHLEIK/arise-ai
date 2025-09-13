@@ -46,12 +46,13 @@ Balance usefulness with personality in every reply.
         
         print("Chat brain initialized. Text-only mode.")
     
-    def get_response(self, user_input: str) -> str:
+    def get_response(self, user_input: str, memory_context: str = "") -> str:
         """
-        Get AI response from Gemini 2.5 Flash.
+        Get AI response from Gemini 2.5 Flash with memory context.
         
         Args:
             user_input: User's message
+            memory_context: Previous conversation and facts context
             
         Returns:
             AI response text only
@@ -59,7 +60,12 @@ Balance usefulness with personality in every reply.
         Time: O(1), Space: O(1)
         """
         try:
-            prompt = f"{self.system_prompt}\n\nUser: {user_input}\nARISE AI:"
+            # Build prompt with memory context if available
+            if memory_context:
+                prompt = f"{self.system_prompt}\n\nContext from previous conversations and facts:\n{memory_context}\n\nUser: {user_input}\nARISE AI:"
+            else:
+                prompt = f"{self.system_prompt}\n\nUser: {user_input}\nARISE AI:"
+                
             response = self.model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
