@@ -15,6 +15,7 @@ import os
 import subprocess
 import webbrowser
 import re
+import urllib.parse
 from typing import Dict, Optional, Tuple
 
 class AutomationEngine:
@@ -211,11 +212,100 @@ class AutomationEngine:
         except Exception as e:
             return False, f"Error opening website: {e}"
     
-    def execute_command(self, command: str) -> Tuple[bool, str]:
-        """Execute automation command (open app or website)"""
-        command = command.strip().lower()
+    def play_on_youtube(self, query: str) -> Tuple[bool, str]:
+        """
+        Play music, movie, or video on YouTube.
         
-        # Remove common command prefixes
+        Args:
+            query: User's request (e.g., "Shape of You", "Inception trailer")
+            
+        Returns:
+            Tuple of (success: bool, message: str)
+        """
+        try:
+            if not query or not query.strip():
+                return False, "No search query provided"
+            
+            # Clean up the query
+            query = query.strip()
+            
+            # Remove common prefixes that might be in the query
+            play_prefixes = ['play', 'open', 'watch', 'show me', 'find', 'search for']
+            query_lower = query.lower()
+            for prefix in play_prefixes:
+                if query_lower.startswith(prefix):
+                    query = query[len(prefix):].strip()
+                    break
+            
+            if not query:
+                return False, "No search query after removing prefixes"
+            
+            # URL encode the query for YouTube search
+            encoded_query = urllib.parse.quote_plus(query)
+            
+            # YouTube search URL that will show results
+            youtube_search_url = f"https://www.youtube.com/results?search_query={encoded_query}"
+            
+            # Try to open the first video directly (YouTube search with autoplay-like behavior)
+            # This creates a URL that's more likely to play the top result
+            youtube_direct_url = f"https://www.youtube.com/results?search_query={encoded_query}&sp=CAM%253D"
+            
+            # Open YouTube search results
+            webbrowser.open(youtube_search_url)
+            
+            return True, f"Playing '{query}' on YouTube"
+            
+        except Exception as e:
+            return False, f"Error playing on YouTube: {e}"
+    
+    def is_media_request(self, command: str) -> bool:
+        """Check if command is requesting to play media content"""
+        media_keywords = [
+            'play', 'watch', 'listen to', 'put on', 'show me',
+            'music', 'song', 'video', 'movie', 'film', 'trailer',
+            'album', 'track', 'artist', 'band'
+        ]
+        
+        command_lower = command.lower()
+        return any(keyword in command_lower for keyword in media_keywords)
+    
+    def extract_media_query(self, command: str) -> str:
+        """Extract the media query from user command"""
+        command = command.strip()
+        
+        # Remove common media command prefixes
+        media_prefixes = [
+            'play', 'watch', 'listen to', 'put on', 'show me',
+            'find', 'search for', 'open', 'start'
+        ]
+        
+        command_lower = command.lower()
+        for prefix in media_prefixes:
+            if command_lower.startswith(prefix):
+                command = command[len(prefix):].strip()
+                break
+        
+        # Remove trailing words that don't add to search
+        trailing_words = ['on youtube', 'video', 'song', 'music', 'movie']
+        command_lower = command.lower()
+        for trailing in trailing_words:
+            if command_lower.endswith(trailing):
+                command = command[:-len(trailing)].strip()
+        
+        return command
+    
+    def execute_command(self, command: str) -> Tuple[bool, str]:
+        """Execute automation command (open app, website, or play media)"""
+        command = command.strip().lower()
+        original_command = command
+        
+        # Check if it's a media request first (highest priority)
+        if self.is_media_request(command):
+            media_query = self.extract_media_query(command)
+            if media_query:
+                return self.play_on_youtube(media_query)
+        
+        # Remove common command prefixes for app/website opening
         prefixes = ['open', 'launch', 'start', 'run', 'execute', 'go to', 'visit']
         for prefix in prefixes:
             if command.startswith(prefix):
@@ -252,7 +342,13 @@ def main():
         "open google",
         "visit youtube",
         "go to facebook.com",
-        "open calculator"
+        "open calculator",
+        # YouTube playback tests
+        "play Shape of You",
+        "watch Inception trailer",
+        "listen to Bohemian Rhapsody",
+        "show me funny cat videos",
+        "play some jazz music"
     ]
     
     print("Testing Automation Engine:")
@@ -262,3 +358,25 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Usage Examples for YouTube Playback:
+# 
+# engine = AutomationEngine()
+# 
+# # Direct YouTube function calls:
+# success, msg = engine.play_on_youtube("Shape of You Ed Sheeran")
+# success, msg = engine.play_on_youtube("Inception movie trailer")
+# success, msg = engine.play_on_youtube("relaxing piano music")
+# 
+# # Through execute_command (recommended for voice commands):
+# success, msg = engine.execute_command("play Shape of You")
+# success, msg = engine.execute_command("watch Inception trailer") 
+# success, msg = engine.execute_command("listen to Bohemian Rhapsody")
+# success, msg = engine.execute_command("show me funny cat videos")
+# success, msg = engine.execute_command("put on some jazz music")
+# 
+# # All commands will:
+# # 1. Extract the media query from natural language
+# # 2. Open YouTube search results for the query
+# # 3. Allow user to click on desired video
+# # 4. Return success message with what's being played

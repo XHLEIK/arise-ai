@@ -249,7 +249,8 @@ class ARISEMain:
         # Automation engine keywords  
         automation_keywords = [
             'open', 'launch', 'start', 'run', 'execute', 'close',
-            'visit', 'go to', 'browse', 'navigate'
+            'visit', 'go to', 'browse', 'navigate',
+            'play', 'watch', 'listen to', 'put on', 'show me'
         ]
         
         # Memory deletion keywords

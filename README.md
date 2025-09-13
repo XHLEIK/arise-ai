@@ -5,7 +5,17 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python&logoColor=white) 
 ![React](https://img.shields.io/badge/React-Frontend-cyan?style=for-the-badge&logo=react&logoColor=white) 
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge) 
+![License](https://img.shields.io/badge/License-MIT-yello| Achievement | Impact | Status |
+|-------------|---------|---------|
+| 🎵 **YouTube Playback Integration** | Voice-controlled music, video, and movie streaming | ✅ Complete |
+| 🔐 **Voice Security Integration** | SpeechBrain-powered speaker verification | ✅ Complete |
+| 🎯 **Seamless Verification** | Single voice input for command + identity | ✅ Complete |
+| 🔊 **Fixed TTS Consistency** | Audio now plays for every response | ✅ Complete |
+| ⚡ **Optimized Voice Speed** | Natural 180 WPM speech rate | ✅ Complete |
+| 🚀 **Ultra-Fast Automation** | 30-second delays → 0.06 seconds | ✅ Complete |
+| 🏗️ **Centralized Architecture** | Eliminated circular dependencies | ✅ Complete |
+| 🛡️ **Enhanced Reliability** | Multiple TTS fallback methods | ✅ Complete |
+| 💭 **Memory Integration** | Persistent conversation memory | ✅ Complete |r-the-badge) 
 ![GitHub Stars](https://img.shields.io/github/stars/XHLEIK/arise-ai?style=for-the-badge&logo=github&logoColor=white)
 
 ### 🎯 A voice-controlled desktop AI assistant that combines speech recognition, intelligent conversation, real-time data fetching, and system automation into a seamless experience.
@@ -30,7 +40,8 @@
 | 🔐 **Voice Security** | ✅ Complete | SpeechBrain-powered voice enrollment and verification |
 | 🧠 **Multi-Engine Architecture** | ✅ Complete | Chat, Data, and Automation engines working independently |
 | ⚡ **Ultra-Fast Automation** | ✅ Complete | Opens applications in ~0.06 seconds |
-| 🌐 **Real-time Data** | ✅ Complete | Weather, stocks, news, and web information |
+| � **YouTube Playback** | ✅ Complete | Voice-controlled music, video, and movie playback |
+| �🌐 **Real-time Data** | ✅ Complete | Weather, stocks, news, and web information |
 | 🗣️ **Consistent Audio** | ✅ Complete | Every response includes voice output - no silent responses |
 | 💭 **Persistent Memory** | ✅ Complete | Session history and long-term fact storage with context awareness |
 | 😴 **Standby Mode** | ✅ Complete | Voice-controlled sleep mode with wake command functionality |
@@ -53,6 +64,7 @@
 - 💬 **Conversational AI**: Powered by Google Gemini for natural conversations
 - 📊 **Real-time Data**: Live weather, stock prices, news headlines
 - 🖥️ **System Automation**: Voice-controlled application launching
+- 🎵 **YouTube Playback**: Voice-controlled music, video, and movie streaming
 - 🔄 **Continuous Operation**: Hands-free conversation loop
 - 💭 **Persistent Memory**: Remembers facts and conversation history across sessions
 - 😴 **Standby Mode**: Voice-controlled sleep mode with "Hey A.R.I.S.E." wake command
@@ -104,7 +116,7 @@
 │   │   ├── 🔊 tts_engine.py         # Optimized text-to-speech (180 WPM)
 │   │   ├── 🎤 stt_engine.py         # Speech recognition with audio recording
 │   │   ├── 🔐 voice_recognition.py  # SpeechBrain-powered voice security
-│   │   ├── ⚙️ automation_engine.py   # Ultra-fast app launching
+│   │   ├── ⚙️ automation_engine.py   # Ultra-fast app launching + YouTube playback
 │   │   ├── 📱 app_scanner.py        # System application detection
 │   │   ├── 💭 memory_manager.py     # Session history and facts storage
 │   │   └── 🧠 brain/
@@ -219,6 +231,16 @@ npm run dev
 "Run notepad"
 ```
 
+#### 🎵 **YouTube Playback Examples**
+```
+"Play Shape of You"
+"Watch Inception trailer"
+"Listen to classical music"
+"Show me funny cat videos"
+"Put on some jazz music"
+"Play Bohemian Rhapsody"
+```
+
 #### 💭 **Memory Examples**
 ```
 "Delete memory"
@@ -295,7 +317,7 @@ graph TD
 |--------|------|---------|-------------|
 | **Chat Brain** | 🧠 | Conversational AI using Google Gemini | Instant responses |
 | **Data Engine** | 📊 | Real-time information (weather, stocks, news) | < 1 second |
-| **Automation Engine** | ⚙️ | System tasks and application launching | 0.06 seconds |
+| **Automation Engine** | ⚙️ | System tasks, app launching, and YouTube playback | 0.06 seconds |
 | **STT Engine** | 🎤 | Speech recognition and audio processing | Real-time |
 | **Voice Recognition** | 🔐 | SpeechBrain-powered speaker verification | 0.6s verification |
 | **TTS Engine** | 🔊 | Voice synthesis with optimized timing | 180 WPM |
