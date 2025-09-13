@@ -5,7 +5,14 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python&logoColor=white) 
 ![React](https://img.shields.io/badge/React-Frontend-cyan?style=for-the-badge&logo=react&logoColor=white) 
-![License](https://img.shields.io/badge/License-MIT-yello| Achievement | Impact | Status |
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge) 
+![GitHub Stars](https://img.shields.io/github/stars/XHLEIK/arise-ai?style=for-the-badge&logo=github&logoColor=white)
+
+### 🎯 A voice-controlled desktop AI assistant that combines speech recognition, intelligent conversation, real-time data fetching, and system automation into a seamless experience.
+
+**Talk to it naturally and watch it execute tasks, answer questions, and control your computer.**
+
+| Achievement | Impact | Status |
 |-------------|---------|---------|
 | 🎵 **YouTube Playback Integration** | Voice-controlled music, video, and movie streaming | ✅ Complete |
 | 🔐 **Voice Security Integration** | SpeechBrain-powered speaker verification | ✅ Complete |
@@ -15,14 +22,10 @@
 | 🚀 **Ultra-Fast Automation** | 30-second delays → 0.06 seconds | ✅ Complete |
 | 🏗️ **Centralized Architecture** | Eliminated circular dependencies | ✅ Complete |
 | 🛡️ **Enhanced Reliability** | Multiple TTS fallback methods | ✅ Complete |
-| 💭 **Memory Integration** | Persistent conversation memory | ✅ Complete |r-the-badge) 
-![GitHub Stars](https://img.shields.io/github/stars/XHLEIK/arise-ai?style=for-the-badge&logo=github&logoColor=white)
-
-### 🎯 A voice-controlled desktop AI assistant that combines speech recognition, intelligent conversation, real-time data fetching, and system automation into a seamless experience.
-
-**Talk to it naturally and watch it execute tasks, answer questions, and control your computer.**
+| 💭 **Memory Integration** | Persistent conversation memory | ✅ Complete |
 
 </div>
+
 
 ---
 
