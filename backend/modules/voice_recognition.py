@@ -13,8 +13,9 @@ from datetime import datetime
 import uuid
 
 # Configuration constants
-VERIFICATION_THRESHOLD = 0.60  # SpeechBrain verification threshold (lowered for testing)
-FEATURE_THRESHOLD = 0.50       # Audio feature similarity threshold (lowered for testing)
+VERIFICATION_THRESHOLD = 0.40  # SpeechBrain verification threshold (lowered for better recognition)
+FEATURE_THRESHOLD = 0.45       # Audio feature similarity threshold
+COMBINED_THRESHOLD = 0.55      # Combined score threshold for verification
 DATA_DIR = "data"
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
 FEATURES_DIR = os.path.join(DATA_DIR, "voice_features")
@@ -269,20 +270,30 @@ class VoiceRecognition:
             print(f"🔍 Voice verification scores:")
             print(f"   Feature similarity: {feature_score:.3f} (threshold: {FEATURE_THRESHOLD})")
             print(f"   SpeechBrain score: {speechbrain_score:.3f} (threshold: {VERIFICATION_THRESHOLD})")
-            print(f"   Combined score: {combined_score:.3f}")
+            print(f"   Combined score: {combined_score:.3f} (threshold: {COMBINED_THRESHOLD})")
             
-            # Verification decision with conservative thresholds
-            # If SpeechBrain failed but features are available, use feature-only verification
-            if speechbrain_score == 0.0 and feature_score > 0.0:
-                print("⚠️  SpeechBrain failed, using feature-only verification")
-                is_verified = feature_score >= (FEATURE_THRESHOLD - 0.1)  # Slightly lower threshold for fallback
-                combined_score = feature_score
-            else:
-                # Normal dual verification
-                is_verified = (
-                    speechbrain_score >= VERIFICATION_THRESHOLD and 
-                    feature_score >= FEATURE_THRESHOLD
-                )
+            # Intelligent verification decision
+            # Method 1: Both scores pass individual thresholds
+            method1_pass = (speechbrain_score >= VERIFICATION_THRESHOLD and feature_score >= FEATURE_THRESHOLD)
+            
+            # Method 2: Combined score passes threshold (more forgiving)
+            method2_pass = combined_score >= COMBINED_THRESHOLD
+            
+            # Method 3: High feature score compensates for lower SpeechBrain score
+            method3_pass = (feature_score >= 0.85 and speechbrain_score >= 0.30)
+            
+            # Method 4: SpeechBrain failed but features are excellent (fallback)
+            method4_pass = (speechbrain_score == 0.0 and feature_score >= 0.80)
+            
+            is_verified = method1_pass or method2_pass or method3_pass or method4_pass
+            
+            # Debug verification methods
+            print(f"🔍 Verification methods:")
+            print(f"   Method 1 (Both thresholds): {'✅' if method1_pass else '❌'}")
+            print(f"   Method 2 (Combined score): {'✅' if method2_pass else '❌'}")
+            print(f"   Method 3 (Feature compensation): {'✅' if method3_pass else '❌'}")
+            print(f"   Method 4 (SpeechBrain fallback): {'✅' if method4_pass else '❌'}")
+            print(f"   Final result: {'✅ VERIFIED' if is_verified else '❌ DENIED'}")
             
             if is_verified:
                 message = f"Recognized as Master User ({master_user['name']})"
