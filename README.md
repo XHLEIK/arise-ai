@@ -31,6 +31,7 @@
 | ⚡ **Ultra-Fast Automation** | ✅ Complete | Opens applications in ~0.06 seconds |
 | 🌐 **Real-time Data** | ✅ Complete | Weather, stocks, news, and web information |
 | 🗣️ **Consistent Audio** | ✅ Complete | Every response includes voice output - no silent responses |
+| 💭 **Persistent Memory** | ✅ Complete | Session history and long-term fact storage with context awareness |
 
 ---
 
@@ -47,6 +48,7 @@
 - 📊 **Real-time Data**: Live weather, stock prices, news headlines
 - 🖥️ **System Automation**: Voice-controlled application launching
 - 🔄 **Continuous Operation**: Hands-free conversation loop
+- 💭 **Persistent Memory**: Remembers facts and conversation history across sessions
 
 </td>
 <td width="50%">
@@ -92,11 +94,14 @@
 │   │   ├── 🎤 stt_engine.py         # Speech recognition
 │   │   ├── ⚙️ automation_engine.py   # Ultra-fast app launching
 │   │   ├── 📱 app_scanner.py        # System application detection
+│   │   ├── 💭 memory_manager.py     # Session history and facts storage
 │   │   └── 🧠 brain/
 │   │       ├── 💬 chat_brain.py     # Conversational AI (Gemini)
 │   │       └── 📊 data_engine.py    # Real-time data fetching
 │   ├── 📁 data/
-│   │   └── 📋 applications.json     # Scanned applications database
+│   │   ├── 📋 applications.json     # Scanned applications database
+│   │   ├── 📝 facts.json           # Long-term memory facts
+│   │   └── 💬 sessions/             # Conversation session storage
 │   └── 📄 requirements.txt
 ├── 🎨 frontend/
 │   ├── 📂 src/                      # React components
@@ -245,6 +250,7 @@ graph TD
 | **STT Engine** | 🎤 | Speech recognition and audio processing | Real-time |
 | **TTS Engine** | 🔊 | Voice synthesis with optimized timing | 180 WPM |
 | **App Scanner** | 📱 | System application discovery and management | Background |
+| **Memory Manager** | 💭 | Session storage and long-term fact retention | Instant |
 
 ---
 
@@ -297,7 +303,8 @@ graph TD
 | 💬 Chat Engine | ✅ **Complete** | Gemini AI integration | Advanced AI |
 | 📊 Data Engine | ✅ **Complete** | Weather, stocks, news | Real-time data |
 | ⚙️ Automation | ✅ **Complete** | 0.06s app launching | Ultra-fast |
-| 🖥️ Desktop UI | 🚧 **In Progress** | React + Electron | 70% complete |
+| � Memory System | ✅ **Complete** | Session & fact storage | Context-aware |
+| �🖥️ Desktop UI | 🚧 **In Progress** | React + Electron | 70% complete |
 | 📱 Mobile App | 🔜 **Planned** | Cross-platform | Future release |
 
 ### 🏆 Recent Achievements
@@ -311,6 +318,7 @@ graph TD
 | 🚀 **Ultra-Fast Automation** | 30-second delays → 0.06 seconds | ✅ Complete |
 | 🏗️ **Centralized Architecture** | Eliminated circular dependencies | ✅ Complete |
 | 🛡️ **Enhanced Reliability** | Multiple TTS fallback methods | ✅ Complete |
+| 💭 **Memory Integration** | Persistent conversation memory | ✅ Complete |
 
 </div>
 

@@ -10,10 +10,11 @@ A.R.I.S.E. backend is **complete and production-ready** with all core features i
 
 - **🎤 STT Engine**: Real-time speech recognition using Google Speech Recognition API
 - **🔊 TTS Engine**: Optimized text-to-speech at 180 WPM with 100% reliability
-- **🧠 Chat Brain**: Conversational AI powered by Google Gemini
+- **🧠 Chat Brain**: Conversational AI powered by Google Gemini with memory context
 - **📊 Data Engine**: Real-time weather, stocks, and news fetching
 - **⚙️ Automation Engine**: Ultra-fast application launching (0.06s)
 - **📱 App Scanner**: System application discovery and management
+- **💭 Memory Manager**: Session buffer and long-term fact storage with context building
 
 ### 🏗️ Architecture Features
 
@@ -22,6 +23,7 @@ A.R.I.S.E. backend is **complete and production-ready** with all core features i
 - **Smart Classification**: Automatic routing to appropriate engine
 - **Error Handling**: Comprehensive fallbacks and recovery
 - **Performance Optimized**: Sub-second response times
+- **Memory Integration**: Context-aware conversations with fact retention
 
 ---
 
@@ -71,6 +73,14 @@ That's it! A.R.I.S.E. will:
 👤 You: "How are you today?"
 📍 Request type: chat
 🔊 A.R.I.S.E: "I'm doing great! Ready to help you with anything..."
+
+👤 You: "I live in New York"
+💭 Memory: Stores location fact for future reference
+🔊 A.R.I.S.E: "Got it! I'll remember you live in New York."
+
+👤 You: "Where do I live?" (in later conversation)
+💭 Context: Retrieves stored location fact
+🔊 A.R.I.S.E: "You live in New York, as you mentioned earlier."
 ```
 
 ---
@@ -86,12 +96,15 @@ backend/
 │   ├── stt_engine.py          # 🎤 Speech recognition engine
 │   ├── automation_engine.py    # ⚙️ Ultra-fast app launching
 │   ├── app_scanner.py         # 📱 System application detection
+│   ├── memory_manager.py      # 💭 Session buffer and facts storage
 │   └── brain/
 │       ├── .env               # 🔑 API keys (create this)
 │       ├── chat_brain.py      # 🧠 Conversational AI (Gemini)
 │       └── data_engine.py     # 📊 Real-time data fetching
 └── data/
-    └── applications.json       # 📁 Scanned applications database
+    ├── applications.json       # 📁 Scanned applications database
+    ├── facts.json             # 💭 Long-term memory facts
+    └── sessions/              # 💬 Conversation session storage
 ```
 
 ---
@@ -111,7 +124,7 @@ backend/
 
 ### 🧠 Chat Brain (`brain/chat_brain.py`)
 - **AI Model**: Google Gemini
-- **Features**: Natural conversation, context awareness
+- **Features**: Natural conversation, context awareness, memory integration
 - **Response**: Text-only output (TTS handled centrally)
 
 ### 📊 Data Engine (`brain/data_engine.py`)
@@ -129,6 +142,12 @@ backend/
 - **Detection**: Registry scanning, path searching, executable detection
 - **Database**: JSON storage for quick access
 - **Features**: Automatic updates, popular app shortcuts
+
+### 💭 Memory Manager (`memory_manager.py`)
+- **Architecture**: Two-layer system with session buffer + long-term facts
+- **Storage**: JSON-based persistence in data/sessions/ and data/facts.json
+- **Features**: Context building, fact extraction, conversation history
+- **Performance**: O(1) message addition, automatic session management
 
 ---
 
@@ -153,9 +172,10 @@ All engines are pre-optimized for best performance:
 
 ### Custom Commands
 The system automatically handles:
-- **Chat requests**: Natural conversation
+- **Chat requests**: Natural conversation with memory context
 - **Data requests**: "weather", "stock", "news" keywords
 - **Automation requests**: "open", "launch", "start" keywords
+- **Memory integration**: Automatic fact extraction and context building
 
 ### Debugging
 ```bash
@@ -164,6 +184,9 @@ python main.py
 
 # Check specific engine
 python -c "from modules.tts_engine import TTSEngine; tts = TTSEngine(); tts.speak('test')"
+
+# Test memory system
+python -c "from modules.memory_manager import MemoryManager; mm = MemoryManager(); mm.add_message('user', 'test')"
 ```
 
 ### Performance Monitoring
@@ -183,6 +206,8 @@ class ARISEMain:
     def _speak(self, text: str)           # Centralized TTS
     def _classify_request(self, input)    # Route to appropriate engine
     def _process_request(self, input)     # Handle user requests
+    def _build_memory_context(self)       # Build context from memory
+    def _extract_and_update_facts(self)   # Extract facts from conversation
     def run(self)                         # Main conversation loop
 ```
 
@@ -196,6 +221,15 @@ class TTSEngine:
 ```python
 class AutomationEngine:
     def execute_command(self, cmd: str) -> Tuple[bool, str]  # 0.06s execution
+```
+
+### Memory Manager
+```python
+class MemoryManager:
+    def add_message(self, role: str, content: str) -> None      # Add to session buffer
+    def save_session(self) -> str                               # Save and clear buffer
+    def update_facts(self, new_facts: Dict[str, Any]) -> None   # Update long-term facts
+    def load_facts(self) -> Dict[str, Any]                      # Load current facts
 ```
 
 ---
@@ -225,6 +259,7 @@ class AutomationEngine:
 | Data Fetching | < 1 second | ✅ Optimized |
 | Engine Switching | Instant | ✅ Optimized |
 | Memory Usage | < 100MB | ✅ Optimized |
+| Memory Operations | O(1) add, O(n) save/load | ✅ Optimized |
 
 ---
 
@@ -236,6 +271,123 @@ While the core system is complete, potential additions:
 - Custom voice training
 - Plugin architecture for third-party engines
 - Mobile companion app
+- Advanced memory search and retrieval
+- Conversation analytics and insights
+
+---
+
+## 💭 Memory System Architecture
+
+A.R.I.S.E. features a sophisticated two-layer memory system designed for persistent conversation context and fact retention.
+
+### Architecture Overview
+
+```
+Memory System
+├── Session Buffer (Short-term)
+│   ├── Current conversation messages
+│   ├── Real-time context building
+│   └── Automatic saving on session end
+└── Facts Storage (Long-term)
+    ├── Persistent user information
+    ├── Learned preferences and data
+    └── Cross-session fact retrieval
+```
+
+### Memory Components
+
+#### Session Buffer
+- **Purpose**: Stores current conversation in memory for immediate context
+- **Capacity**: Last 10 messages used for context building
+- **Performance**: O(1) message addition, instant context retrieval
+- **Persistence**: Auto-saves to `data/sessions/session_timestamp.json` on conversation end
+
+#### Facts Storage
+- **Purpose**: Long-term retention of important user information
+- **Storage**: JSON file at `data/facts.json` with key-value pairs
+- **Updates**: Automatic fact extraction from conversations
+- **Examples**: User location, preferences, personal details, recurring topics
+
+### Memory Integration Flow
+
+1. **Message Addition**: Every user/AI interaction added to session buffer
+2. **Context Building**: Recent messages + stored facts compiled for AI context
+3. **Fact Extraction**: AI responses analyzed for new factual information
+4. **Fact Storage**: New facts merged into long-term storage
+5. **Session Persistence**: Complete conversations saved for future reference
+
+### Usage Examples
+
+```python
+# Initialize memory manager
+memory = MemoryManager()
+
+# Add conversation messages
+memory.add_message('user', 'I live in New York')
+memory.add_message('assistant', 'Got it! I will remember you live in New York.')
+
+# Extract and store facts
+facts = {'location': 'New York'}
+memory.update_facts(facts)
+
+# Build context for AI
+context = memory.build_context()  # Returns formatted string with facts + recent messages
+
+# Save session when conversation ends
+session_id = memory.save_session()
+```
+
+### Data Structure
+
+#### Session File Format (`data/sessions/session_*.json`)
+```json
+{
+    "session_id": "session_1694649600",
+    "created_at": 1694649600.123,
+    "messages": [
+        {
+            "role": "user", 
+            "content": "Hello", 
+            "timestamp": 1694649600.123
+        },
+        {
+            "role": "assistant", 
+            "content": "Hi there!", 
+            "timestamp": 1694649601.456
+        }
+    ]
+}
+```
+
+#### Facts File Format (`data/facts.json`)
+```json
+{
+    "location": "New York",
+    "name": "John",
+    "preferences": {
+        "weather_units": "fahrenheit",
+        "news_topics": ["technology", "science"]
+    },
+    "last_updated": 1694649600.123
+}
+```
+
+### Performance Characteristics
+
+| Operation | Time Complexity | Description |
+|-----------|----------------|-------------|
+| Add Message | O(1) | Append to session buffer |
+| Build Context | O(n) | Format recent messages + facts (n ≤ 10) |
+| Save Session | O(m) | Write m messages to JSON file |
+| Load Facts | O(1) | Read JSON file into memory |
+| Update Facts | O(f) | Merge f new facts with existing |
+
+### Error Handling
+
+- **File I/O Errors**: Graceful fallback to memory-only operation
+- **JSON Corruption**: Auto-recreation of corrupted files
+- **Disk Space**: Automatic cleanup of old session files (configurable)
+- **Memory Limits**: Session buffer size limits prevent memory bloat
 
 ---
 
