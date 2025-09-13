@@ -18,11 +18,12 @@ load_dotenv()
 class DataEngine:
     """Pure data fetching for weather, news, and stocks. Text responses only."""
     
-    def __init__(self):
-        """Initialize data engine with API keys."""
+    def __init__(self, memory_manager=None):
+        """Initialize data engine with API keys and optional memory manager."""
         self.weather_api = os.getenv('WEATHER_API_KEY')
         self.news_api = os.getenv('GNEWS_API_KEY')  # Using GNews API
         self.stock_api = os.getenv('STOCK_API_KEY')
+        self.memory_manager = memory_manager
         
         # Default location (can be changed)
         self.default_city = "New York"
@@ -50,7 +51,7 @@ class DataEngine:
         Get current weather for a city.
         
         Args:
-            city: City name (uses default if None)
+            city: City name (uses facts location or default if None)
             
         Returns:
             Weather description string
@@ -58,7 +59,12 @@ class DataEngine:
         Time: O(1), Space: O(1)
         """
         if not city:
-            city = self.default_city
+            # Try to get location from facts.json first
+            if self.memory_manager:
+                facts = self.memory_manager.load_facts()
+                city = facts.get('location', self.default_city)
+            else:
+                city = self.default_city
             
         try:
             url = f"http://api.weatherapi.com/v1/current.json"

@@ -48,6 +48,7 @@ class ARISEMain:
         # System state
         self.running = False
         self.app_database_ready = False
+        self.standby_mode = False
         
         # Initialize all engines
         self._init_engines()
@@ -65,13 +66,17 @@ class ARISEMain:
             print("Initializing STT engine...")
             self.stt = STTEngine()
             
+            # Initialize Memory Manager (needed by other engines)
+            print("Initializing Memory Manager...")
+            self.memory = MemoryManager()
+            
             # Initialize Chat Brain
             print("Initializing Chat Brain...")
             self.chat = ChatBrain()
             
-            # Initialize Data Engine  
+            # Initialize Data Engine with memory manager
             print("Initializing Data Engine...")
-            self.data = DataEngine()
+            self.data = DataEngine(self.memory)
             
             # Initialize Automation Engine
             print("Initializing Automation Engine...")
@@ -80,10 +85,6 @@ class ARISEMain:
             # Initialize App Scanner
             print("Initializing App Scanner...")
             self.scanner = ApplicationScanner("data/applications.json")
-            
-            # Initialize Memory Manager
-            print("Initializing Memory Manager...")
-            self.memory = MemoryManager()
             
             print("✅ All engines initialized successfully!")
             
@@ -196,6 +197,16 @@ class ARISEMain:
             'clear the memory', 'remove all memory', 'wipe all memory'
         ]
         
+        # Standby mode keywords
+        standby_keywords = [
+            'go to standby', 'standby mode', 'go to sleep', 'sleep mode',
+            'stand by', 'enter standby', 'go standby', 'sleep now'
+        ]
+        
+        # Check for standby requests
+        if any(keyword in user_lower for keyword in standby_keywords):
+            return 'standby'
+        
         # Check for memory deletion requests
         if any(keyword in user_lower for keyword in memory_deletion_keywords):
             return 'memory_delete'
@@ -283,7 +294,16 @@ class ARISEMain:
         print(f"📍 Request type: {request_type}")
         
         try:
-            if request_type == 'memory_delete':
+            if request_type == 'standby':
+                # Standby mode request
+                self.standby_mode = True
+                response = "Going to standby mode. Say 'Hey A.R.I.S.E.' to wake me up."
+                self._speak(response)
+                self.memory.add_message("assistant", response)
+                # Enter standby mode
+                self._enter_standby_mode()
+                
+            elif request_type == 'memory_delete':
                 # Memory deletion request
                 stats = self.memory.get_memory_stats()
                 success = self.memory.delete_all_sessions()
@@ -332,6 +352,42 @@ class ARISEMain:
         """Check if user wants to exit."""
         exit_phrases = ['bye', 'goodbye', 'exit', 'quit', 'stop', 'end', 'see you later']
         return any(phrase in user_input.lower() for phrase in exit_phrases)
+    
+    def _enter_standby_mode(self):
+        """Enter standby mode, listen only for wake command."""
+        print("💤 Entering standby mode... Say 'Hey A.R.I.S.E.' to wake up")
+        
+        while self.standby_mode:
+            try:
+                # Listen for wake command only
+                user_input = self.stt.listen_once(timeout=60)  # Longer timeout in standby
+                
+                if user_input:
+                    user_lower = user_input.lower()
+                    
+                    # Check for wake commands
+                    wake_commands = ['hey arise', 'hey a.r.i.s.e', 'arise wake up', 'wake up arise', 'arise']
+                    
+                    if any(wake_cmd in user_lower for wake_cmd in wake_commands):
+                        self.standby_mode = False
+                        response = "I'm awake! How can I help you?"
+                        self._speak(response)
+                        self.memory.add_message("assistant", response)
+                        print("🔄 Exiting standby mode")
+                        break
+                    else:
+                        # Ignore other commands in standby mode
+                        print(f"💤 In standby - ignoring: {user_input}")
+                        
+            except KeyboardInterrupt:
+                # Allow Ctrl+C to exit standby
+                self.standby_mode = False
+                print("\n🔄 Forced exit from standby mode")
+                break
+            except Exception as e:
+                # Handle any other errors gracefully
+                print(f"Error in standby mode: {e}")
+                continue
     
     def run(self):
         """Main A.R.I.S.E. execution flow."""

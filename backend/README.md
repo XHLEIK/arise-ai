@@ -85,6 +85,14 @@ That's it! A.R.I.S.E. will:
 👤 You: "Delete memory"
 💭 Memory: Clears all session files and conversation buffer
 🔊 A.R.I.S.E: "Memory cleared! I deleted X session files and cleared the current conversation buffer..."
+
+👤 You: "Go to standby"
+😴 Standby: Enters sleep mode, listens only for wake command
+🔊 A.R.I.S.E: "Going to standby mode. Say 'Hey A.R.I.S.E.' to wake me up."
+
+👤 You: "Hey A.R.I.S.E." (while in standby)
+🔄 Wake: Exits standby mode and resumes normal operation
+🔊 A.R.I.S.E: "I'm awake! How can I help you?"
 ```
 
 ---
@@ -169,6 +177,15 @@ All engines are pre-optimized for best performance:
 - STT: 44.1kHz audio sampling
 - Automation: Direct executable launching
 - Data: Concurrent API requests
+- Memory: O(1) operations for frequent actions
+- Standby: Low-power listening mode with minimal processing
+
+### Standby Mode Features
+- **Voice Activation**: Say "go to standby" or "sleep mode" to enter standby
+- **Wake Commands**: "Hey A.R.I.S.E." or "Hey arise" to wake up
+- **Power Saving**: Reduced processing while maintaining voice recognition
+- **Selective Listening**: Ignores all commands except wake phrases in standby
+- **Seamless Resume**: Returns to full functionality immediately upon waking
 
 ---
 
@@ -180,7 +197,9 @@ The system automatically handles:
 - **Data requests**: "weather", "stock", "news" keywords
 - **Automation requests**: "open", "launch", "start" keywords
 - **Memory deletion**: "delete memory", "clear memory", "forget everything" keywords
+- **Standby mode**: "go to standby", "sleep mode", "stand by" keywords
 - **Memory integration**: Automatic fact extraction and context building
+- **Location awareness**: Weather data uses stored location from facts.json
 
 ### Debugging
 ```bash
@@ -213,6 +232,7 @@ class ARISEMain:
     def _process_request(self, input)     # Handle user requests
     def _build_memory_context(self)       # Build context from memory
     def _extract_and_update_facts(self)   # Extract facts from conversation
+    def _enter_standby_mode(self)         # Enter standby mode with wake detection
     def run(self)                         # Main conversation loop
 ```
 

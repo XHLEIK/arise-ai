@@ -32,6 +32,8 @@
 | 🌐 **Real-time Data** | ✅ Complete | Weather, stocks, news, and web information |
 | 🗣️ **Consistent Audio** | ✅ Complete | Every response includes voice output - no silent responses |
 | 💭 **Persistent Memory** | ✅ Complete | Session history and long-term fact storage with context awareness |
+| 😴 **Standby Mode** | ✅ Complete | Voice-controlled sleep mode with wake command functionality |
+| 📍 **Location Awareness** | ✅ Complete | Auto-detects location from user facts for weather and data services |
 
 ---
 
@@ -49,6 +51,8 @@
 - 🖥️ **System Automation**: Voice-controlled application launching
 - 🔄 **Continuous Operation**: Hands-free conversation loop
 - 💭 **Persistent Memory**: Remembers facts and conversation history across sessions
+- 😴 **Standby Mode**: Voice-controlled sleep mode with "Hey A.R.I.S.E." wake command
+- 📍 **Location Awareness**: Weather and data services use your stored location preferences
 
 </td>
 <td width="50%">
@@ -210,6 +214,14 @@ npm run dev
 "Clear memory" 
 "Remove all memory"
 "Forget everything"
+```
+
+#### 😴 **Standby Mode Examples**
+```
+"Go to standby"
+"Sleep mode"
+"Stand by"
+"Enter standby"
 ```
 
 </td>
