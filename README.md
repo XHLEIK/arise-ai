@@ -204,6 +204,14 @@ npm run dev
 "Run notepad"
 ```
 
+#### 💭 **Memory Examples**
+```
+"Delete memory"
+"Clear memory" 
+"Remove all memory"
+"Forget everything"
+```
+
 </td>
 </tr>
 </table>

@@ -188,6 +188,18 @@ class ARISEMain:
             'visit', 'go to', 'browse', 'navigate'
         ]
         
+        # Memory deletion keywords
+        memory_deletion_keywords = [
+            'delete memory', 'remove memory', 'clear memory', 'forget everything',
+            'erase memory', 'wipe memory', 'reset memory', 'delete sessions',
+            'clear sessions', 'forget all', 'delete all memory', 'delete my memory',
+            'clear the memory', 'remove all memory', 'wipe all memory'
+        ]
+        
+        # Check for memory deletion requests
+        if any(keyword in user_lower for keyword in memory_deletion_keywords):
+            return 'memory_delete'
+        
         # Check for data requests
         if any(keyword in user_lower for keyword in data_keywords):
             return 'data'
@@ -271,7 +283,20 @@ class ARISEMain:
         print(f"📍 Request type: {request_type}")
         
         try:
-            if request_type == 'data':
+            if request_type == 'memory_delete':
+                # Memory deletion request
+                stats = self.memory.get_memory_stats()
+                success = self.memory.delete_all_sessions()
+                
+                if success:
+                    response = f"Memory cleared! I deleted {stats['saved_sessions']} session files and cleared the current conversation buffer. I've forgotten all our previous conversations but I still remember your stored facts."
+                else:
+                    response = "I had trouble clearing the memory. Some files might still remain."
+                
+                self._speak(response)
+                # Note: We don't add this to memory since we just cleared it
+                
+            elif request_type == 'data':
                 # Data engine request
                 response = self.data.process_data_request(user_input)
                 self._speak(response)  # All responses go through TTS

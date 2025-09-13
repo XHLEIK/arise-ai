@@ -81,6 +81,10 @@ That's it! A.R.I.S.E. will:
 👤 You: "Where do I live?" (in later conversation)
 💭 Context: Retrieves stored location fact
 🔊 A.R.I.S.E: "You live in New York, as you mentioned earlier."
+
+👤 You: "Delete memory"
+💭 Memory: Clears all session files and conversation buffer
+🔊 A.R.I.S.E: "Memory cleared! I deleted X session files and cleared the current conversation buffer..."
 ```
 
 ---
@@ -175,6 +179,7 @@ The system automatically handles:
 - **Chat requests**: Natural conversation with memory context
 - **Data requests**: "weather", "stock", "news" keywords
 - **Automation requests**: "open", "launch", "start" keywords
+- **Memory deletion**: "delete memory", "clear memory", "forget everything" keywords
 - **Memory integration**: Automatic fact extraction and context building
 
 ### Debugging
@@ -230,6 +235,8 @@ class MemoryManager:
     def save_session(self) -> str                               # Save and clear buffer
     def update_facts(self, new_facts: Dict[str, Any]) -> None   # Update long-term facts
     def load_facts(self) -> Dict[str, Any]                      # Load current facts
+    def delete_all_sessions(self) -> bool                       # Clear all sessions and buffer
+    def get_memory_stats(self) -> Dict[str, Any]                # Get memory usage statistics
 ```
 
 ---
@@ -315,6 +322,20 @@ Memory System
 3. **Fact Extraction**: AI responses analyzed for new factual information
 4. **Fact Storage**: New facts merged into long-term storage
 5. **Session Persistence**: Complete conversations saved for future reference
+6. **User-Initiated Deletion**: Voice commands can clear all session history
+
+### User Memory Control
+
+Users can manage their memory through voice commands:
+
+| Command Examples | Action | What Gets Deleted |
+|-----------------|--------|-------------------|
+| "Delete memory" | Clear all sessions | All session files + current buffer |
+| "Clear memory" | Clear all sessions | All session files + current buffer |
+| "Forget everything" | Clear all sessions | All session files + current buffer |
+| "Remove all memory" | Clear all sessions | All session files + current buffer |
+
+**Important**: Facts storage (`facts.json`) is preserved during memory deletion. This ensures user preferences and important information remain available even after clearing conversation history.
 
 ### Usage Examples
 
@@ -335,6 +356,13 @@ context = memory.build_context()  # Returns formatted string with facts + recent
 
 # Save session when conversation ends
 session_id = memory.save_session()
+
+# Delete all memory sessions (user request)
+success = memory.delete_all_sessions()
+
+# Get memory statistics
+stats = memory.get_memory_stats()
+# Returns: {'session_buffer_messages': 0, 'saved_sessions': 0, 'stored_facts': 2}
 ```
 
 ### Data Structure
@@ -381,6 +409,8 @@ session_id = memory.save_session()
 | Save Session | O(m) | Write m messages to JSON file |
 | Load Facts | O(1) | Read JSON file into memory |
 | Update Facts | O(f) | Merge f new facts with existing |
+| Delete All Sessions | O(s) | Remove s session files + clear buffer |
+| Get Memory Stats | O(s) | Count s session files + facts |
 
 ### Error Handling
 

@@ -91,6 +91,52 @@ class MemoryManager:
             print(f"Error loading facts: {e}")
             return {}
     
+    def delete_all_sessions(self) -> bool:
+        """Delete all session files and clear current session buffer. Returns True if successful."""
+        try:
+            # Clear current session buffer
+            self.session_buffer.clear()
+            
+            # Delete all session files
+            deleted_count = 0
+            if self.sessions_dir.exists():
+                for session_file in self.sessions_dir.glob("session_*.json"):
+                    try:
+                        session_file.unlink()  # Delete the file
+                        deleted_count += 1
+                    except Exception as e:
+                        print(f"Error deleting session file {session_file}: {e}")
+            
+            print(f"Memory cleared: {deleted_count} session files deleted")
+            return True
+            
+        except Exception as e:
+            print(f"Error clearing memory: {e}")
+            return False
+    
+    def get_memory_stats(self) -> Dict[str, Any]:
+        """Get statistics about current memory usage. Returns dict with session and fact counts."""
+        try:
+            stats = {
+                "session_buffer_messages": len(self.session_buffer),
+                "saved_sessions": 0,
+                "stored_facts": 0
+            }
+            
+            # Count saved session files
+            if self.sessions_dir.exists():
+                stats["saved_sessions"] = len(list(self.sessions_dir.glob("session_*.json")))
+            
+            # Count stored facts
+            facts = self.load_facts()
+            stats["stored_facts"] = len(facts)
+            
+            return stats
+            
+        except Exception as e:
+            print(f"Error getting memory stats: {e}")
+            return {"session_buffer_messages": 0, "saved_sessions": 0, "stored_facts": 0}
+    
     def _read_json(self, file_path: Path) -> Dict[str, Any]:
         """Read JSON file safely."""
         with open(file_path, 'r', encoding='utf-8') as f:
